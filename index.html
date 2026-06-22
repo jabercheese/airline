@@ -1,363 +1,417 @@
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛬 NEXUS_ATC // TERMINAL_CONTROL_CENTER</title>
+    <title>🚦 METRO_TRAFFIC // CENTRAL_COORDINATION_DESK</title>
     <style>
         :root {
-            --sky-blue: #00d2ff;
-            --radar-bg: #030a16;
-            --panel-bg: #0b1528;
-            --border-blue: #1c3d5a;
-            --alert-red: #ff3333;
-            --success-green: #00ff66;
-            --warning-amber: #ffaa00;
-            --text-light: #e2e8f0;
-            --font-stack: 'Segoe UI', system-ui, sans-serif;
+            --bg-dark: #0f141d;
+            --panel-bg: #1a2332;
+            --asphalt: #2d3748;
+            --road-line: #ecc94b;
+            --neon-blue: #3182ce;
+            --signal-red: #e53e3e;
+            --signal-yellow: #dd6b20;
+            --signal-green: #38a169;
+            --text-light: #f7fafc;
+            --border-blue: #2b6cb0;
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); }
-        body { background: var(--radar-bg); color: var(--text-light); padding: 15px; }
+        body { background: var(--bg-dark); color: var(--text-light); padding: 15px; overflow-x: hidden; }
 
-        /* Unified Top Navigation Status Strip */
-        header { background: var(--panel-bg); border: 1px solid var(--border-blue); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; margin-bottom: 15px; }
-        .header-title { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: var(--sky-blue); }
-        .live-timer { font-family: monospace; font-size: 14px; background: #040914; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--border-blue); }
+        /* Scannable Control Center Ribbon */
+        header { background: var(--panel-bg); border: 2px solid var(--border-blue); padding: 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .sys-title { font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #63b3ed; }
+        .sys-status { font-family: monospace; font-size: 14px; background: #0b0f19; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--border-blue); }
 
-        /* Split-Screen Dashboard Structure Layout */
-        .split-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: calc(100vh - 85px); min-height: 650px; }
+        /* Master Application Grid Grid */
+        .workspace-grid { display: grid; grid-template-columns: 1fr 450px; gap: 15px; height: calc(100vh - 100px); min-height: 750px; }
         
-        .side-panel { background: var(--panel-bg); border: 1px solid var(--border-blue); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; }
-        .panel-header { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 2px solid var(--border-blue); color: var(--sky-blue); display: flex; justify-content: space-between; align-items: center; }
+        .main-panel { background: var(--panel-bg); border: 1px solid var(--border-blue); border-radius: 6px; padding: 15px; display: flex; flex-direction: column; position: relative; }
+        .side-panel { background: var(--panel-bg); border: 1px solid var(--border-blue); border-radius: 6px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .panel-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border-blue); padding-bottom: 6px; margin-bottom: 12px; color: #63b3ed; display: flex; justify-content: space-between; align-items: center; }
 
-        .scrollable-stack { flex: 1; overflow-y: auto; padding-right: 4px; }
-        ::-webkit-scrollbar { width: 5px; }
+        .scrollable { flex: 1; overflow-y: auto; padding-right: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--border-blue); border-radius: 3px; }
 
-        /* Left Side: Air Traffic Vectors Components Templates */
-        .flight-row { background: rgba(28, 61, 90, 0.2); border: 1px solid var(--border-blue); padding: 12px; margin-bottom: 8px; border-radius: 3px; position: relative; transition: 0.2s; }
-        .flight-row.emergency-status { border-color: var(--alert-red); background: rgba(255, 51, 51, 0.08); animation: pulse-alert 2s infinite; }
-        .flight-meta { display: grid; grid-template-columns: 1.5fr 1fr 1.2fr 1fr; gap: 10px; font-size: 13px; font-family: monospace; align-items: center; }
+        /* INTERSECTION LIVE CANVAS GRID GRAPHICS */
+        .simulation-canvas { flex: 1; background: #171923; border: 1px solid #4a5568; border-radius: 4px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
-        /* State Indicators Progress Tracking Meter */
-        .state-track { font-weight: bold; padding: 2px 6px; border-radius: 2px; font-size: 11px; text-transform: uppercase; text-align: center; }
-        .state-inbound { background: #1a365d; color: #93c5fd; }
-        .state-approach { background: #5b21b6; color: #ddd6fe; }
-        .state-landed { background: #065f46; color: #a7f3d0; }
-        .state-atgate { background: #374151; color: #f3f4f6; }
+        /* Road Layout Infrastructure styling */
+        .road-h { position: absolute; width: 100%; height: 100px; background: var(--asphalt); top: calc(50% - 50px); left: 0; box-shadow: 0 0 15px rgba(0,0,0,0.4); border-top: 2px dashed #4a5568; border-bottom: 2px dashed #4a5568;}
+        .road-v { position: absolute; height: 100%; width: 100px; background: var(--asphalt); left: calc(50% - 50px); top: 0; box-shadow: 0 0 15px rgba(0,0,0,0.4); border-left: 2px dashed #4a5568; border-right: 2px dashed #4a5568;}
+        .center-lines { position: absolute; width: 100px; height: 100px; border: 2px dashed var(--road-line); pointer-events: none; z-index: 2; }
 
-        /* Right Side: Customs Intercept Profile Sheet Templates */
-        .passenger-clearance-box { background: #0d1b2a; border: 1px solid var(--border-blue); padding: 15px; border-radius: 3px; margin-bottom: 10px; }
-        .pax-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 13px; margin: 10px 0; font-family: monospace; }
-        .flag-indicator { font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; }
-        .flag-passed { background: rgba(0, 255, 102, 0.15); color: var(--success-green); border: 1px solid var(--success-green); }
-        .flag-failed { background: rgba(255, 51, 51, 0.15); color: var(--alert-red); border: 1px solid var(--alert-red); }
+        /* Dynamic Traffic Signal Components UI */
+        .light-node { position: absolute; width: 34px; background: #000; border: 2px solid #4a5568; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; gap: 4px; align-items: center; z-index: 5; box-shadow: 0 4px 8px rgba(0,0,0,0.6); }
+        .light-bulb { width: 18px; height: 18px; border-radius: 50%; background: #222; transition: background 0.2s, box-shadow 0.2s; }
+        
+        /* Dynamic Light State Status Highlights */
+        .node-red .bulb-red { background: var(--signal-red); box-shadow: 0 0 12px var(--signal-red); }
+        .node-yellow .bulb-yellow { background: var(--signal-yellow); box-shadow: 0 0 12px var(--signal-yellow); }
+        .node-green .bulb-green { background: var(--signal-green); box-shadow: 0 0 12px var(--signal-green); }
 
-        /* Action Buttons Core Utility Framework triggers */
-        .btn { padding: 6px 12px; border: none; border-radius: 3px; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.15s; }
-        .btn-primary { background: var(--sky-blue); color: #000; }
-        .btn-primary:hover { opacity: 0.9; box-shadow: 0 0 8px var(--sky-blue); }
-        .btn-danger { background: var(--alert-red); color: #fff; }
-        .btn-danger:hover { opacity: 0.9; box-shadow: 0 0 8px var(--alert-red); }
-        .btn-success { background: var(--success-green); color: #000; }
-        .btn-success:hover { opacity: 0.9; box-shadow: 0 0 8px var(--success-green); }
-        .btn-disabled { background: #223; color: #556; cursor: not-allowed; }
+        /* Positioning Coordinates of the 4 Junction Nodes */
+        #light-zone-N { top: calc(50% - 110px); left: calc(50% + 60px); }
+        #light-zone-E { top: calc(50% + 60px); left: calc(50% + 110px); transform: rotate(90deg); }
+        #light-zone-S { top: calc(50% + 65px); left: calc(50% - 94px); }
+        #light-zone-W { top: calc(50% - 115px); left: calc(50% - 144px); transform: rotate(90deg); }
 
-        /* Animation System Core Definitions */
-        @keyframes pulse-alert { 0%, 100% { border-color: var(--alert-red); } 50% { border-color: #500; } }
-        .hidden { display: none !important; }
+        /* ANIMATED VEHICLES ASSETS STYLING */
+        .vehicle { position: absolute; border-radius: 3px; font-weight: bold; font-size: 10px; display: flex; justify-content: center; align-items: center; color: #fff; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        /* Motorcade Styling Definition */
+        .motorcade-car { width: 45px; height: 22px; background: #1a1a1a; border: 2px solid #d69e2e; }
+        .motorcade-vip { background: #ffd700 !important; color: #000; border: 2px solid #fff; box-shadow: 0 0 15px #ffd700; }
+        
+        /* Police Vehicle Car Styling Layout */
+        .police-car { width: 40px; height: 20px; background: #002244; border: 2px solid #fff; animation: sirens 0.4s infinite alternate; }
+
+        /* CONTROL RACKS MODULAR STRUCTURES */
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: monospace; }
+        .matrix-table th, .matrix-table td { padding: 8px; text-align: left; border-bottom: 1px solid #2d3748; }
+        .matrix-table th { color: #a0aec0; text-transform: uppercase; }
+        
+        .badge { padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px; }
+        .bg-red { background: rgba(229,62,98,0.2); color: #fc8181; border: 1px solid #e53e3e; }
+        .bg-yellow { background: rgba(221,107,32,0.2); color: #fbd38d; border: 1px solid #dd6b20; }
+        .bg-green { background: rgba(56,161,105,0.2); color: #68d391; border: 1px solid #38a169; }
+
+        /* Action Controls Buttons Configuration */
+        .btn { padding: 5px 10px; border: none; border-radius: 3px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.15s; }
+        .btn-green { background: var(--signal-green); color: white; }
+        .btn-red { background: var(--signal-red); color: white; }
+        .btn-blue { background: var(--neon-blue); color: white; }
+        .btn-warning { background: var(--signal-yellow); color: #000; }
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        .dispatch-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #111722; padding: 12px; border: 1px dashed var(--border-blue); border-radius: 4px; }
+
+        /* Logger Feed Module Frame UI */
+        .log-terminal { background: #070b11; border: 1px solid #2d3748; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; color: #a0aec0; height: 160px; display: flex; flex-direction: column-reverse; overflow-y: auto; }
+        .log-line { margin-bottom: 4px; line-height: 1.4; border-left: 2px solid var(--neon-blue); padding-left: 6px; }
+        .log-line.alert { border-color: var(--signal-red); color: #fc8181; }
+        .log-line.warn { border-color: var(--signal-yellow); color: #fbd38d; }
+        .log-line.success { border-color: var(--signal-green); color: #68d391; }
+
+        /* KEYFRAME ANIMATIONS LAYOUT CONFIGS */
+        @keyframes sirens {
+            0% { box-shadow: 0 0 10px #e53e3e; border-color: #e53e3e; }
+            100% { box-shadow: 0 0 10px #3182ce; border-color: #3182ce; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-title">📡 NEXUS AUTOMATED AIRSPACE &amp; PORTAL MATRIX CONTROL</div>
-        <div class="live-timer" id="lbl-radar-clock">SYS_TICK: 0000.00</div>
+        <div class="sys-title">🎛️ METRO_GRID // URBAN INTELLIGENT TRAFFIC MANAGEMENT COMPLEX</div>
+        <div class="sys-status" id="lbl-system-heartbeat">GRID_CONCURRENCY: ONLINE // TICK: 000000</div>
     </header>
 
-    <div class="split-dashboard">
+    <div class="workspace-grid">
 
-        <div class="side-panel">
-            <div class="panel-header">
-                <span>✈️ Live Approach Queue Vectors</span>
-                <button class="btn btn-primary" style="font-size: 11px; padding: 4px 8px;" onclick="injectIncomingFlightVector()">Inject Vector Flight (+)</button>
-            </div>
+        <div class="main-panel">
+            <div class="panel-title">🗺️ Intersection Live Topology Matrix Render</div>
             
-            <div class="scrollable-stack" id="frame-airspace-stack">
+            <div class="simulation-canvas" id="viewport-canvas">
+                <div class="road-h"></div>
+                <div class="road-v"></div>
+                <div class="center-lines"></div>
+
+                <div class="light-node node-red" id="light-zone-N">
+                    <div class="light-bulb bulb-red"></div>
+                    <div class="light-bulb bulb-yellow"></div>
+                    <div class="light-bulb bulb-green"></div>
+                </div>
+                <div class="light-node node-green" id="light-zone-E">
+                    <div class="light-bulb bulb-red"></div>
+                    <div class="light-bulb bulb-yellow"></div>
+                    <div class="light-bulb bulb-green"></div>
+                </div>
+                <div class="light-node node-red" id="light-zone-S">
+                    <div class="light-bulb bulb-red"></div>
+                    <div class="light-bulb bulb-yellow"></div>
+                    <div class="light-bulb bulb-green"></div>
+                </div>
+                <div class="light-node node-green" id="light-zone-W">
+                    <div class="light-bulb bulb-red"></div>
+                    <div class="light-bulb bulb-yellow"></div>
+                    <div class="light-bulb bulb-green"></div>
+                </div>
+
                 </div>
         </div>
 
         <div class="side-panel">
-            <div class="panel-header">
-                <span>🛂 Customs Enforcement Terminal Interceptions</span>
-                <span id="lbl-customs-count" style="font-family: monospace; color: var(--warning-amber);">0 Flagged Profiles Pending</span>
+            
+            <div>
+                <div class="panel-title">🚨 Signal Sector Matrix Grid Control</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>ID Sector</th>
+                            <th>Current State</th>
+                            <th>Cycle Countdown</th>
+                            <th>Coordinator Force Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grid-tbody-signals">
+                        </tbody>
+                </table>
             </div>
 
-            <div class="scrollable-stack" id="frame-customs-stack">
-                <div style="text-align: center; margin-top: 50px; color:#4a5568; font-size:13px; font-style:italic;">
-                    No profiles currently flagged for secondary inspection. Arriving passenger streams operating nominally...
+            <div>
+                <div class="panel-title">⚡ Emergency Tactical Escorts &amp; Overrides</div>
+                <div class="dispatch-box">
+                    <div style="grid-column: span 2; font-size:12px; color:#a0aec0; margin-bottom:4px;">
+                        Activating the VIP Motorcade triggers an absolute green corridor track along the horizontal highway axis.
+                    </div>
+                    <button class="btn btn-warning" style="grid-column: span 2; padding: 10px;" onclick="deployHighPriorityMotorcade()">
+                        🚀 Dispatch Animated VIP Motorcade
+                    </button>
                 </div>
             </div>
+
+            <div>
+                <div class="panel-title">🚓 Precinct Police Dispatch Routing Core</div>
+                <div class="dispatch-box">
+                    <div style="grid-column: span 2; font-size:12px; color:#a0aec0;">
+                        Deploying an active unit locks the designated sector's lights to RED and blocks all traffic flow.
+                    </div>
+                    <div>
+                        <label style="font-size:11px; display:block; margin-bottom:4px; color:#a0aec0;">TARGET ZONE Sector:</label>
+                        <select id="select-police-target-zone" style="background:#0b0f19; border:1px solid var(--border-blue); color:#fff; padding:6px; width:100%; border-radius:3px;">
+                            <option value="N">North Junction Sector [N]</option>
+                            <option value="E">East Junction Sector [E]</option>
+                            <option value="S">South Junction Sector [S]</option>
+                            <option value="W">West Junction Sector [W]</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; align-items:flex-end;">
+                        <button class="btn btn-blue" style="width:100%; padding:8px;" onclick="dispatchPoliceLockdownUnit()">
+                            ⚡ Dispatch Unit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div class="panel-title">📋 Live Telemetry Coordinator Action Log Feed</div>
+                <div class="log-terminal" id="frame-system-logs">
+                    <div class="log-line success">System initialized successfully. Network auto-cycles engaged.</div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 
     <script>
-        let airportDatabaseState = {
-            flights: [
-                { id: "EM-402", origin: "London (LHR)", fuel: 72, state: "Inbound", gate: "GATE-A1", manifests: [] },
-                { id: "QA-911", origin: "Doha (DOH)", fuel: 24, state: "Final Approach", gate: "GATE-B3", manifests: [] },
-                { id: "UA-107", origin: "New York (JFK)", fuel: 85, state: "Inbound", gate: "GATE-C2", manifests: [] }
-            ],
-            flaggedCustomsProfiles: [],
-            systemTickCounter: 0,
-            gatesList: ["GATE-A1", "GATE-A2", "GATE-B3", "GATE-C1", "GATE-C2"]
+        // System Master State Monitoring Database Model
+        let trafficSystemState = {
+            ticks: 0,
+            sectors: {
+                N: { id: "Sector-N", label: "North Light", state: "RED", timer: 12, isLockedByPolice: false },
+                E: { id: "Sector-E", label: "East Light", state: "GREEN", timer: 12, isLockedByPolice: false },
+                S: { id: "Sector-S", label: "South Light", state: "RED", timer: 12, isLockedByPolice: false },
+                W: { id: "Sector-W", label: "West Light", state: "GREEN", timer: 12, isLockedByPolice: false }
+            },
+            isMotorcadeActive: false
         };
 
         window.onload = function() {
-            // Seed base baseline manifest array details directly upon startup loop processing
-            airportDatabaseState.flights.forEach(f => generatePassengerManifestForFlight(f));
-            
-            renderAirspaceRadarStack();
-            renderCustomsScreeningStack();
-            
-            // Core Simulation Heartbeat Engine Ticks (Every 2.5 seconds updates parameters states)
-            setInterval(executeGlobalSimulationStepHeartbeat, 2500);
+            renderSignalsControlTable();
+            // Start main state ticks progression engine (Triggers every 1.0 second intervals)
+            setInterval(executeSystemControlHeartbeatTick, 1000);
         };
 
-        /* AUTOMATED TIMED STATE PROGRESSION LOOPS ENGINE ENGINE */
-        function executeGlobalSimulationStepHeartbeat() {
-            airportDatabaseState.systemTickCounter++;
-            document.getElementById('lbl-radar-clock').innerText = `SYS_TICK: ${String(airportDatabaseState.systemTickCounter).padStart(4, '0')}.HZ`;
+        /* CORE SIMULATION ENGINE LOOPS ENGINE ENGINE */
+        function executeSystemControlHeartbeatTick() {
+            trafficSystemState.ticks++;
+            document.getElementById('lbl-system-heartbeat').innerText = `GRID_CONCURRENCY: ONLINE // TICK: ${String(trafficSystemState.ticks).padStart(6, '0')}`;
 
-            // State Pipeline Reducer Map Framework Definitions
-            const stateSequencePipeline = {
-                "Inbound": "Final Approach",
-                "Final Approach": "Landed",
-                "Landed": "At Gate"
-            };
-
-            airportDatabaseState.flights.forEach(flight => {
-                // Deduct fuel reserves for all flights still actively moving through the air
-                if (flight.state === "Inbound" || flight.state === "Final Approach") {
-                    flight.fuel = Math.max(0, flight.fuel - Math.floor(Math.random() * 6) - 4);
+            // Automatic light countdown timer step decrementer loop logic
+            for (let key in trafficSystemState.sectors) {
+                let sec = trafficSystemState.sectors[key];
+                
+                if (sec.isLockedByPolice) {
+                    // Police overrides skip standard clock degradation algorithms
+                    continue;
                 }
 
-                // Automatic State Progression Logic
-                // Landed and At Gate states automatically clear down after time blocks
-                if (flight.state === "At Gate") {
-                    // Flight departs/turns around, remove from active display parameters
-                    flight.markedForPurge = true;
-                } else if (flight.state === "Landed") {
-                    flight.state = "At Gate";
-                    // When flight reaches gate, dump its flagged travelers database elements instantly into immigration screen
-                    deployFlightManifestToCustomsRegistry(flight);
-                } else {
-                    // Standard incremental pipeline transformation unless flight is running out of gas reserves
-                    if (flight.fuel > 15 || flight.state === "Final Approach") {
-                        // Regular 35% natural chance per heartbeat sequence to advance standard positions coordinates
-                        if (Math.random() > 0.65) {
-                            flight.state = stateSequencePipeline[flight.state];
-                        }
+                sec.timer--;
+
+                if (sec.timer <= 0) {
+                    // Core automated sequence shifting matrix loop patterns
+                    if (sec.state === "GREEN") {
+                        sec.state = "YELLOW";
+                        sec.timer = 3; // Short warning alert window
+                    } else if (sec.state === "YELLOW") {
+                        sec.state = "RED";
+                        sec.timer = 15; // Complete stop phase block window
+                    } else if (sec.state === "RED") {
+                        sec.state = "GREEN";
+                        sec.timer = 12; // Go block clearance windows
                     }
                 }
-            });
-
-            // Filter out purged records
-            airportDatabaseState.flights = airportDatabaseState.flights.filter(f => !f.markedForPurge);
-
-            // Periodically inject random vectors automatically to keep layout active
-            if (Math.random() > 0.8 && airportDatabaseState.flights.length < 6) {
-                injectIncomingFlightVector();
-            }
-
-            renderAirspaceRadarStack();
-            renderCustomsScreeningStack();
-        }
-
-        /* DATA ARRAY PROFILE INITIALIZATION GENERATORS */
-        function generatePassengerManifestForFlight(flightObj) {
-            const firstNames = ["Liam", "Sophia", "Amir", "Elena", "Yuki", "Carlos", "Fatima", "Oliver"];
-            const lastNames = ["Smith", "Ivanov", "Al-Saeed", "Chen", "Garcia", "Tanaka", "Müller", "Davis"];
-            const countries = ["United Kingdom", "United States", "Germany", "Japan", "Brazil", "Egypt", "Canada"];
-
-            let paxCount = Math.floor(Math.random() * 3) + 2; // Keep arrays limited for scannable interface
-            flightObj.manifests = [];
-
-            for (let i = 0; i < paxCount; i++) {
-                let pfn = firstNames[Math.floor(Math.random() * firstNames.length)];
-                let pln = lastNames[Math.floor(Math.random() * lastNames.length)];
                 
-                // Random metadata assignment calculations values formulas
-                let isPassportValid = Math.random() > 0.12; 
-                let isBaggageFlagged = Math.random() > 0.75; 
-
-                flightObj.manifests.push({
-                    passengerId: "PX-" + Math.floor(1000 + Math.random() * 9000),
-                    fullName: `${pfn} ${pln}`,
-                    citizenship: countries[Math.floor(Math.random() * countries.length)],
-                    passportValid: isPassportValid,
-                    baggageScanFlagged: isBaggageFlagged
-                });
-            }
-        }
-
-        function injectIncomingFlightVector() {
-            const identifiers = ["EK", "EY", "QR", "BA", "LH", "AF"];
-            const globalCities = ["Paris (CDG)", "Tokyo (HND)", "Cairo (CAI)", "Sydney (SYD)", "Mumbai (BOM)"];
-            
-            let fid = identifiers[Math.floor(Math.random() * identifiers.length)] + "-" + Math.floor(100 + Math.random() * 900);
-            let corigin = globalCities[Math.floor(Math.random() * globalCities.length)];
-            let fgate = airportDatabaseState.gatesList[Math.floor(Math.random() * airportDatabaseState.gatesList.length)];
-
-            let newFlight = {
-                id: fid,
-                origin: corigin,
-                fuel: Math.floor(45 + Math.random() * 50),
-                state: "Inbound",
-                gate: fgate,
-                manifests: []
-            };
-
-            generatePassengerManifestForFlight(newFlight);
-            airportDatabaseState.flights.push(newFlight);
-            renderAirspaceRadarStack();
-        }
-
-        function deployFlightManifestToCustomsRegistry(flightObj) {
-            flightObj.manifests.forEach(pax => {
-                // Profiles get sent to customs screening panel if passport is expired OR baggage scan throws alert
-                if (!pax.passportValid || pax.baggageScanFlagged) {
-                    // Verify if duplicate object is already tracked before committing arrays
-                    if (!airportDatabaseState.flaggedCustomsProfiles.some(p => p.passengerId === pax.passengerId)) {
-                        pax.sourceFlightId = flightObj.id;
-                        airportDatabaseState.flaggedCustomsProfiles.push(pax);
-                    }
-                }
-            });
-        }
-
-        /* AIRSPACE QUEUE OVERRIDE ACTIONS PRIVILEGES INTERACTION */
-        function triggerEmergencyLandingQueueVectorBump(flightIdx) {
-            let targetFlight = airportDatabaseState.flights[flightIdx];
-            if (!targetFlight || targetFlight.state !== "Inbound") return;
-
-            // Instantly elevate state position to front of sequence array
-            targetFlight.state = "Final Approach";
-            targetFlight.fuel = Math.min(targetFlight.fuel + 5, 25); // Emergency fuel safety adjustment factor logic split
-            
-            renderAirspaceRadarStack();
-        }
-
-        /* CUSTOMS DISPATCH DECISION APPROVAL COMMAND ACTIONS */
-        function processCustomsClearanceResolution(paxIdx, resolutionDecisionString) {
-            let targetProfile = airportDatabaseState.flaggedCustomsProfiles[paxIdx];
-            if (!targetProfile) return;
-
-            if (resolutionDecisionString === 'DEPORT_DENIED') {
-                alert(`SECURITY INFRUCTION ACTION SYSTEM: Passenger identity ${targetProfile.fullName} entry has been formally denied. Transferring profile to terminal local custody zone.`);
-            } else {
-                // Approved entry processing pathway clear flags
-                console.log(`Passenger ${targetProfile.fullName} manually cleared by control supervisor.`);
+                updateSignalNodeVisualGraphicState(key, sec.state);
             }
 
-            // Remove profile from pending queue stack arrays
-            airportDatabaseState.flaggedCustomsProfiles.splice(paxIdx, 1);
-            renderCustomsScreeningStack();
+            renderSignalsControlTable();
         }
 
-        /* UI RENDERING LAYOUT ENGINE DOM WRITERS */
-        function renderAirspaceRadarStack() {
-            const container = document.getElementById('frame-airspace-stack');
-            container.innerHTML = '';
+        /* UPDATE GRAPHICAL RENDERS DOM INTERACTION WRITERS */
+        function updateSignalNodeVisualGraphicState(sectorKey, stateValue) {
+            const el = document.getElementById(`light-zone-${sectorKey}`);
+            if (!el) return;
 
-            if (airportDatabaseState.flights.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding-top:40px; color:#4a5568; font-size:13px;">Airspace Sector Empty. Scanning for incoming telemetry feeds...</div>`;
-                return;
-            }
+            el.classList.remove('node-red', 'node-yellow', 'node-green');
+            el.classList.add(`node-${stateValue.toLowerCase()}`);
+        }
 
-            airportDatabaseState.flights.forEach((flight, idx) => {
-                let isFuelEmergency = flight.fuel <= 20;
-                let isFlyable = (flight.state === "Inbound" || flight.state === "Final Approach");
+        function renderSignalsControlTable() {
+            const tbody = document.getElementById('grid-tbody-signals');
+            tbody.innerHTML = '';
+
+            for (let key in trafficSystemState.sectors) {
+                let sec = trafficSystemState.sectors[key];
                 
-                let stateClass = 'state-inbound';
-                if(flight.state === "Final Approach") stateClass = 'state-approach';
-                if(flight.state === "Landed") stateClass = 'state-landed';
-                if(flight.state === "At Gate") stateClass = 'state-atgate';
+                let badgeClass = 'bg-red';
+                if(sec.state === 'YELLOW') badgeClass = 'bg-warning';
+                if(sec.state === 'GREEN') badgeClass = 'bg-green';
 
-                let row = document.createElement('div');
-                row.className = `flight-row ${isFuelEmergency && isFlyable ? 'emergency-status' : ''}`;
-
+                let row = document.createElement('tr');
                 row.innerHTML = `
-                    <div class="flight-meta">
-                        <div>
-                            <strong style="font-size:15px; color:#fff;">${flight.id}</strong>
-                            <span style="display:block; font-size:11px; color:#718096; margin-top:2px;">Orig: ${flight.origin}</span>
+                    <td><strong>[${key}] ${sec.label}</strong> ${sec.isLockedByPolice ? '🚨' : ''}</td>
+                    <td><span class="badge ${badgeClass}">${sec.state}${sec.isLockedByPolice ? ' (POLICE LOCK)' : ''}</span></td>
+                    <td>${sec.isLockedByPolice ? '--' : sec.timer + 's'}</td>
+                    <td>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn btn-green" onclick="forceCoordinatorSignalState('${key}', 'GREEN')">Green</button>
+                            <button class="btn btn-red" onclick="forceCoordinatorSignalState('${key}', 'RED')">Red</button>
                         </div>
-                        <div>
-                            <span class="state-track ${stateClass}">${flight.state}</span>
-                            <span style="display:block; font-size:11px; text-align:center; color:#718096; margin-top:4px;">${flight.gate}</span>
-                        </div>
-                        <div>
-                            <span style="font-weight:bold; color: ${isFuelEmergency && isFlyable ? 'var(--alert-red)' : 'var(--success-green)'}">
-                                FUEL: ${flight.fuel}%
-                            </span>
-                            <span style="display:block; font-size:10px; color:#718096; margin-top:2px;">PAX COUNTS: ${flight.manifests.length}</span>
-                        </div>
-                        <div style="text-align: right;">
-                            ${(flight.state === 'Inbound') ? 
-                                `<button class="btn btn-danger" style="font-size:10px; padding:4px 6px;" onclick="triggerEmergencyLandingQueueVectorBump(${idx})">🚨 BUMP</button>` : 
-                                `<button class="btn btn-disabled" style="font-size:10px; padding:4px 6px;" disabled>HOLD</button>`
-                            }
-                        </div>
-                    </div>
+                    </td>
                 `;
-                container.appendChild(row);
-            });
+                tbody.appendChild(row);
+            }
         }
 
-        function renderCustomsScreeningStack() {
-            const container = document.getElementById('frame-customs-stack');
-            const counterLabel = document.getElementById('lbl-customs-count');
+        function appendLineToTerminalLog(msg, semanticClass = '') {
+            const terminal = document.getElementById('frame-system-logs');
+            let timeStamp = new Date().toLocaleTimeString();
             
-            container.innerHTML = '';
-            counterLabel.innerText = `${airportDatabaseState.flaggedCustomsProfiles.length} Flagged Profiles Pending`;
+            let line = document.createElement('div');
+            line.className = `log-line ${semanticClass}`;
+            line.innerText = `[${timeStamp}] ${msg}`;
+            
+            terminal.prepend(line);
+        }
 
-            if (airportDatabaseState.flaggedCustomsProfiles.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; margin-top: 50px; color:#4a5568; font-size:13px; font-style:italic;">
-                        No profiles currently flagged for secondary inspection. Arriving passenger streams operating nominally...
-                    </div>`;
+        /* COORDINATOR INTERACTION OVERRIDE DISPATCH UTILITIES HOOKS */
+        function forceCoordinatorSignalState(sectorKey, targetState) {
+            let sec = trafficSystemState.sectors[sectorKey];
+            
+            if (sec.isLockedByPolice) {
+                appendLineToTerminalLog(`[DENIED] Sector ${sectorKey} cannot change state. Active tactical police lockdown in progress.`, 'alert');
                 return;
             }
 
-            airportDatabaseState.flaggedCustomsProfiles.forEach((pax, idx) => {
-                let passportBadge = pax.passportValid ? `<span class="flag-indicator flag-passed">VALID</span>` : `<span class="flag-indicator flag-failed">❌ EXPIRED</span>`;
-                let baggageBadge = pax.baggageScanFlagged ? `<span class="flag-indicator flag-failed">⚠️ CONTRABAND_FLAG</span>` : `<span class="flag-indicator flag-passed">CLEARED</span>`;
+            sec.state = targetState;
+            sec.timer = (targetState === "GREEN") ? 15 : 12; // Reset buffer clock assignments
+            
+            updateSignalNodeVisualGraphicState(sectorKey, targetState);
+            renderSignalsControlTable();
+            appendLineToTerminalLog(`[FORCE ACTION] Coordinator forced Sector [${sectorKey}] to status level: ${targetState}`, 'warn');
+        }
 
-                let card = document.createElement('div');
-                card.className = "passenger-clearance-box";
+        /* ANIMATED HIGH PRIORITY MOTORCADE SPRINT PIPELINE EXECUTION */
+        function deployHighPriorityMotorcade() {
+            if (trafficSystemState.isMotorcadeActive) {
+                appendLineToTerminalLog(`[ABORT] High-priority vector already running inside the active grid tracks pipeline.`, 'alert');
+                return;
+            }
 
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border-blue); padding-bottom:6px;">
-                        <span style="font-weight:bold; color:#fff; font-size:14px;">${pax.fullName} <small style="color:var(--sky-blue); font-weight:normal;">(${pax.passengerId})</small></span>
-                        <span style="font-family:monospace; font-size:11px; background:#1c3d5a; padding:2px 6px; border-radius:2px;">FLIGHT: ${pax.sourceFlightId}</span>
-                    </div>
-                    
-                    <div class="pax-profile-grid">
-                        <div>CITIZENSHIP: <span style="color:#fff;">${pax.citizenship}</span></div>
-                        <div>PASSPORT LOGS: ${passportBadge}</div>
-                        <div style="grid-column: span 2; margin-top:4px;">X-RAY SCANNER FEED: ${baggageBadge}</div>
-                    </div>
+            trafficSystemState.isMotorcadeActive = true;
+            appendLineToTerminalLog(`🚨 [VIP ROUTE ENGAGED] Clearing horizontal transport path. Setting highway sectors to absolute GREEN.`, 'warn');
 
-                    <div style="display:flex; gap:10px; margin-top:12px; justify-content: flex-end;">
-                        <button class="btn btn-danger" onclick="processCustomsClearanceResolution(${idx}, 'DEPORT_DENIED')">Deport / Deny Entry</button>
-                        <button class="btn btn-success" onclick="processCustomsClearanceResolution(${idx}, 'APPROVE_CLEAR')">Acknowledge &amp; Clear</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+            // Force horizontal roads to green, clear intersecting vertical roads to red
+            forceCoordinatorSignalState('W', 'GREEN');
+            forceCoordinatorSignalState('E', 'GREEN');
+            forceCoordinatorSignalState('N', 'RED');
+            forceCoordinatorSignalState('S', 'RED');
+
+            const canvas = document.getElementById('viewport-canvas');
+            
+            // Create VIP Escort vehicle elements arrays block
+            let vipCar = document.createElement('div');
+            vipCar.className = "vehicle motorcade-car motorcade-vip";
+            vipCar.innerText = "VIP";
+            vipCar.style.top = "calc(50% - 11px)";
+            vipCar.style.left = "-60px";
+            vipCar.style.transition = "left 5s linear";
+
+            canvas.appendChild(vipCar);
+
+            // Trigger structural CSS animation translation via asynchronous timing offsets transitions
+            setTimeout(() => {
+                vipCar.style.left = "110%";
+            }, 100);
+
+            // Clean up and release the highway axis grid parameters control lock bounds back to automation
+            setTimeout(() => {
+                vipCar.remove();
+                trafficSystemState.isMotorcadeActive = false;
+                appendLineToTerminalLog(`[VIP COMPLETED] Motorcade clear of operational grid coordinates. Releasing system locks.`, 'success');
+            }, 5200);
+        }
+
+        /* POLICE LOCKDOWN TACTICAL UNIT APPLICATION DISPATCH */
+        function dispatchPoliceLockdownUnit() {
+            const targetZone = document.getElementById('select-police-target-zone').value;
+            let sec = trafficSystemState.sectors[targetZone];
+
+            if (sec.isLockedByPolice) {
+                appendLineToTerminalLog(`Precinct units already deployed at Sector [${targetZone}]. Terminating redundant routes.`, 'alert');
+                return;
+            }
+
+            // Engage system constraints models locks profiles parameters
+            sec.isLockedByPolice = true;
+            sec.state = "RED";
+            updateSignalNodeVisualGraphicState(targetZone, "RED");
+            renderSignalsControlTable();
+
+            appendLineToTerminalLog(`🚓 [DISPATCH] Unit deployed to Sector [${targetZone}]. Light locked to continuous RED.`, 'alert');
+
+            // Spawn dynamic police squad vehicle element container inside canvas overlay zone positions coordinates
+            const canvas = document.getElementById('viewport-canvas');
+            let copCar = document.createElement('div');
+            copCar.className = "vehicle police-car";
+            copCar.innerText = "🚨 POL";
+            
+            // Orient asset dynamically matching selected coordinate parameters target arrays
+            if (targetZone === 'N') { copCar.style.top = "40px"; copCar.style.left = "calc(50% + 8px)"; }
+            if (targetZone === 'S') { copCar.style.bottom = "40px"; copCar.style.left = "calc(50% - 48px)"; }
+            if (targetZone === 'E') { copCar.style.top = "calc(50% + 8px)"; copCar.style.right = "40px"; }
+            if (targetZone === 'W') { copCar.style.top = "calc(50% - 28px)"; copCar.style.left = "40px"; }
+
+            canvas.appendChild(copCar);
+
+            // Automatic stand-down and clearing window sequence logic cycle paths timeouts
+            setTimeout(() => {
+                sec.isLockedByPolice = false;
+                sec.timer = 10; // Give them a fresh countdown sequence window block
+                copCar.remove();
+                renderSignalsControlTable();
+                appendLineToTerminalLog(`[RESOLVED] Tactical Police unit recalled from Sector [${targetZone}]. Resetting automated sector sequences grid cycles.`, 'success');
+            }, 10000);
         }
     </script>
 </body>
