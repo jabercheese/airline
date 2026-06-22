@@ -3,436 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>/// CHIRON_NET // OPERATIVE_MATRIX_v4.22</title>
+    <title>🛬 NEXUS_ATC // TERMINAL_CONTROL_CENTER</title>
     <style>
         :root {
-            --neon-green: #00ff66;
-            --dark-green: #003311;
-            --neon-red: #ff3333;
-            --alert-orange: #ffaa00;
-            --terminal-dark: #0a0f0d;
-            --panel-bg: #111a16;
-            --border-glow: #00ff66;
-            --font-stack: 'Courier New', Courier, monospace;
+            --sky-blue: #00d2ff;
+            --radar-bg: #030a16;
+            --panel-bg: #0b1528;
+            --border-blue: #1c3d5a;
+            --alert-red: #ff3333;
+            --success-green: #00ff66;
+            --warning-amber: #ffaa00;
+            --text-light: #e2e8f0;
+            --font-stack: 'Segoe UI', system-ui, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); }
-        body { background: var(--terminal-dark); color: var(--neon-green); padding: 20px; overflow-x: hidden; }
+        body { background: var(--radar-bg); color: var(--text-light); padding: 15px; }
 
-        /* Scannable Terminal Header */
-        header { border: 2px solid var(--neon-green); padding: 15px; background: var(--panel-bg); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 15px rgba(0,255,102,0.2); margin-bottom: 20px; }
-        .glitch-title { font-size: 20px; font-weight: bold; letter-spacing: 2px; }
-        .system-ticker { font-size: 13px; text-align: right; }
+        /* Unified Top Navigation Status Strip */
+        header { background: var(--panel-bg); border: 1px solid var(--border-blue); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; margin-bottom: 15px; }
+        .header-title { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: var(--sky-blue); }
+        .live-timer { font-family: monospace; font-size: 14px; background: #040914; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--border-blue); }
 
-        /* Master Dashboard Matrix Grid */
-        .grid-container { display: grid; grid-template-columns: 320px 1fr 380px; gap: 20px; height: calc(100vh - 100px); min-height: 700px; }
+        /* Split-Screen Dashboard Structure Layout */
+        .split-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: calc(100vh - 85px); min-height: 650px; }
         
-        .panel { background: var(--panel-bg); border: 1px solid var(--neon-green); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; box-shadow: inset 0 0 10px rgba(0,255,102,0.05); }
-        .panel-title { font-size: 14px; font-weight: bold; text-transform: uppercase; border-bottom: 2px dashed var(--neon-green); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        .side-panel { background: var(--panel-bg); border: 1px solid var(--border-blue); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; }
+        .panel-header { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 2px solid var(--border-blue); color: var(--sky-blue); display: flex; justify-content: space-between; align-items: center; }
 
-        /* Scrollable inner frames */
-        .scrollable-content { flex: 1; overflow-y: auto; padding-right: 5px; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--terminal-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--neon-green); }
+        .scrollable-stack { flex: 1; overflow-y: auto; padding-right: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-blue); border-radius: 3px; }
 
-        /* Operative Profile Component Templates */
-        .op-card { border: 1px solid var(--neon-green); padding: 10px; margin-bottom: 10px; background: rgba(0,51,17,0.3); cursor: pointer; transition: 0.2s; }
-        .op-card:hover { background: rgba(0,255,102,0.1); box-shadow: 0 0 8px var(--neon-green); }
-        .op-card.selected { border-color: #fff; background: var(--dark-green); }
-        .op-meta { display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; }
-
-        /* Interactive Heat Tracker Indicator */
-        .heat-wrapper { margin-top: 6px; font-size: 11px; }
-        .heat-bar-outer { width: 100%; height: 6px; background: #222; border: 1px solid var(--neon-green); margin-top: 3px; position: relative; }
-        .heat-bar-inner { height: 100%; background: var(--neon-green); width: 0%; transition: width 0.4s ease; }
-        .heat-critical { background: var(--neon-red) !important; }
-
-        /* Badge Framework */
-        .status-badge { font-size: 10px; padding: 1px 5px; border-radius: 2px; font-weight: bold; }
-        .badge-active { background: var(--dark-green); color: var(--neon-green); border: 1px solid var(--neon-green); }
-        .badge-burned { background: #300; color: var(--neon-red); border: 1px solid var(--neon-red); }
-        .badge-mia { background: #332200; color: var(--alert-orange); border: 1px solid var(--alert-orange); }
-
-        /* Corporate Targets Section UI */
-        .target-card { border: 1px solid var(--neon-green); padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
-        .target-card:hover { background: rgba(0,255,102,0.1); }
-        .target-card.selected { border-color: #fff; background: rgba(0,255,102,0.15); }
-
-        /* Mission Execution Node Console Control Room */
-        .dispatch-desk { display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.4); padding: 15px; border: 1px dashed var(--neon-green); margin-bottom: 15px; }
-        .btn-action { background: var(--dark-green); color: var(--neon-green); border: 1px solid var(--neon-green); padding: 10px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 13px; }
-        .btn-action:hover { background: var(--neon-green); color: var(--terminal-dark); box-shadow: 0 0 10px var(--neon-green); }
-        .btn-action:disabled { border-color: #333; color: #444; background: #000; cursor: not-allowed; box-shadow: none; }
-
-        /* Real-time Ticking Logger Box */
-        .terminal-log-feed { background: #000; border: 1px solid var(--neon-green); padding: 10px; flex: 1; font-size: 12px; line-height: 1.5; color: #aaffbb; }
-        .log-line { margin-bottom: 4px; border-left: 2px solid var(--neon-green); padding-left: 6px; }
-        .log-line.alert { color: var(--alert-orange); border-color: var(--alert-orange); }
-        .log-line.danger { color: var(--neon-red); border-color: var(--neon-red); font-weight: bold; animation: pulse 1s infinite; }
-        .log-line.success { color: #fff; border-color: #fff; }
-
-        /* Emergency Burn Override Interface Overlay Mask */
-        .lockdown-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(15,0,0,0.95); display:flex; justify-content:center; align-items:center; z-index:9999; border: 4px solid var(--neon-red); }
-        .lockdown-box { background: #1a0000; border: 2px solid var(--neon-red); max-width: 550px; padding: 30px; text-align: center; box-shadow: 0 0 30px var(--neon-red); color: var(--neon-red); }
-        .lockdown-box h2 { font-size: 24px; margin-bottom: 15px; letter-spacing: 3px; animation: flash 0.8s infinite; }
-        .lockdown-box p { font-size: 13px; margin-bottom: 20px; color: #ff8888; line-height: 1.6; }
+        /* Left Side: Air Traffic Vectors Components Templates */
+        .flight-row { background: rgba(28, 61, 90, 0.2); border: 1px solid var(--border-blue); padding: 12px; margin-bottom: 8px; border-radius: 3px; position: relative; transition: 0.2s; }
+        .flight-row.emergency-status { border-color: var(--alert-red); background: rgba(255, 51, 51, 0.08); animation: pulse-alert 2s infinite; }
+        .flight-meta { display: grid; grid-template-columns: 1.5fr 1fr 1.2fr 1fr; gap: 10px; font-size: 13px; font-family: monospace; align-items: center; }
         
+        /* State Indicators Progress Tracking Meter */
+        .state-track { font-weight: bold; padding: 2px 6px; border-radius: 2px; font-size: 11px; text-transform: uppercase; text-align: center; }
+        .state-inbound { background: #1a365d; color: #93c5fd; }
+        .state-approach { background: #5b21b6; color: #ddd6fe; }
+        .state-landed { background: #065f46; color: #a7f3d0; }
+        .state-atgate { background: #374151; color: #f3f4f6; }
+
+        /* Right Side: Customs Intercept Profile Sheet Templates */
+        .passenger-clearance-box { background: #0d1b2a; border: 1px solid var(--border-blue); padding: 15px; border-radius: 3px; margin-bottom: 10px; }
+        .pax-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 13px; margin: 10px 0; font-family: monospace; }
+        .flag-indicator { font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; }
+        .flag-passed { background: rgba(0, 255, 102, 0.15); color: var(--success-green); border: 1px solid var(--success-green); }
+        .flag-failed { background: rgba(255, 51, 51, 0.15); color: var(--alert-red); border: 1px solid var(--alert-red); }
+
+        /* Action Buttons Core Utility Framework triggers */
+        .btn { padding: 6px 12px; border: none; border-radius: 3px; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.15s; }
+        .btn-primary { background: var(--sky-blue); color: #000; }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 0 8px var(--sky-blue); }
+        .btn-danger { background: var(--alert-red); color: #fff; }
+        .btn-danger:hover { opacity: 0.9; box-shadow: 0 0 8px var(--alert-red); }
+        .btn-success { background: var(--success-green); color: #000; }
+        .btn-success:hover { opacity: 0.9; box-shadow: 0 0 8px var(--success-green); }
+        .btn-disabled { background: #223; color: #556; cursor: not-allowed; }
+
+        /* Animation System Core Definitions */
+        @keyframes pulse-alert { 0%, 100% { border-color: var(--alert-red); } 50% { border-color: #500; } }
         .hidden { display: none !important; }
-
-        /* CSS Animation Matrices */
-        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="glitch-title">⚡ CHIRON_NET // NODE_EXPLOIT_CONDUIT</div>
-        <div class="system-status">
-            <span class="system-ticker" id="global-timestamp">SECURE_CONCURRENCY // ACTIVE</span>
-        </div>
+        <div class="header-title">📡 NEXUS AUTOMATED AIRSPACE &amp; PORTAL MATRIX CONTROL</div>
+        <div class="live-timer" id="lbl-radar-clock">SYS_TICK: 0000.00</div>
     </header>
 
-    <div class="grid-container">
+    <div class="split-dashboard">
 
-        <div class="panel">
-            <div class="panel-title">👥 Shadow Operatives <span id="lbl-op-count">0/0</span></div>
-            <div class="scrollable-content" id="frame-operatives-list"></div>
-            <button class="btn-action" style="margin-top: 10px; font-size: 11px; padding: 6px;" onclick="generateRandomOperativeProfile()">Recruit Freelance Asset (+)</button>
-        </div>
-
-        <div class="panel" style="border-color: var(--neon-green);">
-            <div class="panel-title">📡 Real-Time Decryption Matrix &amp; Dispatch</div>
+        <div class="side-panel">
+            <div class="panel-header">
+                <span>✈️ Live Approach Queue Vectors</span>
+                <button class="btn btn-primary" style="font-size: 11px; padding: 4px 8px;" onclick="injectIncomingFlightVector()">Inject Vector Flight (+)</button>
+            </div>
             
-            <div class="dispatch-desk">
-                <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                    <div>ASSIGNED AGENT: <span id="lbl-desk-agent" style="color:#fff;">[NONE_SELECTED]</span></div>
-                    <div>TARGET ENCLAVE: <span id="lbl-desk-target" style="color:#fff;">[NONE_SELECTED]</span></div>
+            <div class="scrollable-stack" id="frame-airspace-stack">
                 </div>
-                <button class="btn-action" id="btn-initialize-heist" disabled onclick="executeInfiltrationSequence()">Execute Infiltration Conduit</button>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel-header">
+                <span>🛂 Customs Enforcement Terminal Interceptions</span>
+                <span id="lbl-customs-count" style="font-family: monospace; color: var(--warning-amber);">0 Flagged Profiles Pending</span>
             </div>
 
-            <div class="panel-title" style="border-top: 1px dashed var(--neon-green); margin-top: 5px; padding-top: 10px;">📋 Live Signal Feed Intercept</div>
-            <div class="terminal-log-feed scrollable-content" id="frame-terminal-logs">
-                <div class="log-line">CHIRON_NET v4.22 system initialized. Waiting for breach pipeline authorization target...</div>
+            <div class="scrollable-stack" id="frame-customs-stack">
+                <div style="text-align: center; margin-top: 50px; color:#4a5568; font-size:13px; font-style:italic;">
+                    No profiles currently flagged for secondary inspection. Arriving passenger streams operating nominally...
+                </div>
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title">🏢 Targeted Infrastructure Networks</div>
-            <div class="scrollable-content" id="frame-targets-list"></div>
-
-            <div class="panel-title" style="border-top: 1px dashed var(--neon-green); margin-top:15px; padding-top:10px;">📈 Global Network Intelligence</div>
-            <div style="font-size:12px; line-height: 1.8; padding-top: 5px;">
-                <div>SYSTEM MARKERS YIELD: <span id="lbl-stats-credits" style="color:#fff; font-weight:bold;">0</span> EXPLOIT_CREDITS</div>
-                <div>SUCCESSFUL EXTRACTIONS: <span id="lbl-stats-heists" style="color:#fff;">0 successful leaks</span></div>
-                <div style="margin-top: 10px; color:#77aa88; font-size: 10px;">*Warning: High corporate system heat values invite active hunter-killer tracking routines across nodes.*</div>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="lockdown-emergency-screen" class="lockdown-mask hidden">
-        <div class="lockdown-box">
-            <h2>🚨 EXTRALIMITARY LOCKDOWN DETECTED 🚨</h2>
-            <p>A trace routine triggered an active firewall capture sequence against <strong id="lbl-lockdown-agent-name" style="color:#fff;"></strong>! The operative's internal identity metrics framework is leaking across layers.</p>
-            <div style="margin-bottom: 25px; background: rgba(0,0,0,0.5); padding: 15px; border: 1px dashed var(--neon-red);">
-                <label style="font-size: 11px; display:block; margin-bottom: 8px; font-weight: bold;">INPUT TRANSACTION CRYPTO KEY DESTRUCT CODE:</label>
-                <input type="text" id="input-lockdown-bypass-key" style="background:#000; border:1px solid var(--neon-red); color: var(--neon-red); padding:10px; text-align:center; width:100%; font-size:16px; letter-spacing:2px;" placeholder="ENTER SECURITY CODE">
-                <div style="font-size: 11px; color: #ff8888; margin-top: 6px;">Required Key String Signature Hint: <span id="lbl-lockdown-key-hint" style="font-weight: bold; text-decoration: underline;"></span></div>
-            </div>
-            <button class="btn-action" style="background:#400; border-color:var(--neon-red); color:var(--neon-red);" onclick="executeEmergencyWipePurgeOverride()">Authorize Data Purge &amp; Burn Asset</button>
-        </div>
     </div>
 
     <script>
-        // System Mock Database State Matrix
-        let nodeDatabaseState = {
-            operatives: [
-                { id: "OP-08", name: "Vector_Zero", status: "Active", heat: 15, netrunning: 85, wetwork: 30, socialEng: 45 },
-                { id: "OP-14", name: "Kusanagi_M", status: "Active", heat: 45, netrunning: 40, wetwork: 90, socialEng: 20 },
-                { id: "OP-99", name: "Synapse_Jack", status: "MIA", heat: 85, netrunning: 75, wetwork: 15, socialEng: 80 }
+        let airportDatabaseState = {
+            flights: [
+                { id: "EM-402", origin: "London (LHR)", fuel: 72, state: "Inbound", gate: "GATE-A1", manifests: [] },
+                { id: "QA-911", origin: "Doha (DOH)", fuel: 24, state: "Final Approach", gate: "GATE-B3", manifests: [] },
+                { id: "UA-107", origin: "New York (JFK)", fuel: 85, state: "Inbound", gate: "GATE-C2", manifests: [] }
             ],
-            targets: [
-                { id: "TG-101", corp: "Arasaka Heavy Indus.", node: "Sub-Orbital Mainframe", difficulty: "Low", securityRating: 30, payout: 250 },
-                { id: "TG-202", corp: "Militech Armaments", node: "R&D Prototype Vault", difficulty: "Medium", securityRating: 55, payout: 600 },
-                { id: "TG-303", corp: "Weyland-Yutani Biotech", node: "Genetic Registry Core", difficulty: "CRITICAL", securityRating: 85, payout: 1500 }
-            ],
-            metrics: { exploitCredits: 120, completedExtractions: 1 },
-            activeSelectedAgentIdx: null,
-            activeSelectedTargetIdx: null,
-            isSimulationRunning: false
+            flaggedCustomsProfiles: [],
+            systemTickCounter: 0,
+            gatesList: ["GATE-A1", "GATE-A2", "GATE-B3", "GATE-C1", "GATE-C2"]
         };
-
-        // Temporary tracking holders during live loop iterations
-        let activeLockdownAgentPointer = null;
-        let generatedLockdownSecretKeyString = "";
 
         window.onload = function() {
-            renderOperativesProfilesList();
-            renderCorporateTargetsList();
-            refreshGlobalIntelligencePanelMetrics();
-            startTimeDisplayLoop();
+            // Seed base baseline manifest array details directly upon startup loop processing
+            airportDatabaseState.flights.forEach(f => generatePassengerManifestForFlight(f));
+            
+            renderAirspaceRadarStack();
+            renderCustomsScreeningStack();
+            
+            // Core Simulation Heartbeat Engine Ticks (Every 2.5 seconds updates parameters states)
+            setInterval(executeGlobalSimulationStepHeartbeat, 2500);
         };
 
-        function startTimeDisplayLoop() {
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('global-timestamp').innerText = `SYS_TIME: ${now.toISOString().replace('T', ' ').substring(0, 19)} // CONCURRENCY: STABLE`;
-            }, 1000);
+        /* AUTOMATED TIMED STATE PROGRESSION LOOPS ENGINE ENGINE */
+        function executeGlobalSimulationStepHeartbeat() {
+            airportDatabaseState.systemTickCounter++;
+            document.getElementById('lbl-radar-clock').innerText = `SYS_TICK: ${String(airportDatabaseState.systemTickCounter).padStart(4, '0')}.HZ`;
+
+            // State Pipeline Reducer Map Framework Definitions
+            const stateSequencePipeline = {
+                "Inbound": "Final Approach",
+                "Final Approach": "Landed",
+                "Landed": "At Gate"
+            };
+
+            airportDatabaseState.flights.forEach(flight => {
+                // Deduct fuel reserves for all flights still actively moving through the air
+                if (flight.state === "Inbound" || flight.state === "Final Approach") {
+                    flight.fuel = Math.max(0, flight.fuel - Math.floor(Math.random() * 6) - 4);
+                }
+
+                // Automatic State Progression Logic
+                // Landed and At Gate states automatically clear down after time blocks
+                if (flight.state === "At Gate") {
+                    // Flight departs/turns around, remove from active display parameters
+                    flight.markedForPurge = true;
+                } else if (flight.state === "Landed") {
+                    flight.state = "At Gate";
+                    // When flight reaches gate, dump its flagged travelers database elements instantly into immigration screen
+                    deployFlightManifestToCustomsRegistry(flight);
+                } else {
+                    // Standard incremental pipeline transformation unless flight is running out of gas reserves
+                    if (flight.fuel > 15 || flight.state === "Final Approach") {
+                        // Regular 35% natural chance per heartbeat sequence to advance standard positions coordinates
+                        if (Math.random() > 0.65) {
+                            flight.state = stateSequencePipeline[flight.state];
+                        }
+                    }
+                }
+            });
+
+            // Filter out purged records
+            airportDatabaseState.flights = airportDatabaseState.flights.filter(f => !f.markedForPurge);
+
+            // Periodically inject random vectors automatically to keep layout active
+            if (Math.random() > 0.8 && airportDatabaseState.flights.length < 6) {
+                injectIncomingFlightVector();
+            }
+
+            renderAirspaceRadarStack();
+            renderCustomsScreeningStack();
         }
 
-        /* DYNAMIC ELEMENT DOM GENERATORS */
-        function renderOperativesProfilesList() {
-            const container = document.getElementById('frame-operatives-list');
-            container.innerHTML = '';
+        /* DATA ARRAY PROFILE INITIALIZATION GENERATORS */
+        function generatePassengerManifestForFlight(flightObj) {
+            const firstNames = ["Liam", "Sophia", "Amir", "Elena", "Yuki", "Carlos", "Fatima", "Oliver"];
+            const lastNames = ["Smith", "Ivanov", "Al-Saeed", "Chen", "Garcia", "Tanaka", "Müller", "Davis"];
+            const countries = ["United Kingdom", "United States", "Germany", "Japan", "Brazil", "Egypt", "Canada"];
+
+            let paxCount = Math.floor(Math.random() * 3) + 2; // Keep arrays limited for scannable interface
+            flightObj.manifests = [];
+
+            for (let i = 0; i < paxCount; i++) {
+                let pfn = firstNames[Math.floor(Math.random() * firstNames.length)];
+                let pln = lastNames[Math.floor(Math.random() * lastNames.length)];
+                
+                // Random metadata assignment calculations values formulas
+                let isPassportValid = Math.random() > 0.12; 
+                let isBaggageFlagged = Math.random() > 0.75; 
+
+                flightObj.manifests.push({
+                    passengerId: "PX-" + Math.floor(1000 + Math.random() * 9000),
+                    fullName: `${pfn} ${pln}`,
+                    citizenship: countries[Math.floor(Math.random() * countries.length)],
+                    passportValid: isPassportValid,
+                    baggageScanFlagged: isBaggageFlagged
+                });
+            }
+        }
+
+        function injectIncomingFlightVector() {
+            const identifiers = ["EK", "EY", "QR", "BA", "LH", "AF"];
+            const globalCities = ["Paris (CDG)", "Tokyo (HND)", "Cairo (CAI)", "Sydney (SYD)", "Mumbai (BOM)"];
             
-            nodeDatabaseState.operatives.forEach((op, idx) => {
-                let badgeClass = op.status === 'Active' ? 'badge-active' : (op.status === 'Burned' ? 'badge-burned' : 'badge-mia');
-                let isSelected = (nodeDatabaseState.activeSelectedAgentIdx === idx) ? 'selected' : '';
+            let fid = identifiers[Math.floor(Math.random() * identifiers.length)] + "-" + Math.floor(100 + Math.random() * 900);
+            let corigin = globalCities[Math.floor(Math.random() * globalCities.length)];
+            let fgate = airportDatabaseState.gatesList[Math.floor(Math.random() * airportDatabaseState.gatesList.length)];
+
+            let newFlight = {
+                id: fid,
+                origin: corigin,
+                fuel: Math.floor(45 + Math.random() * 50),
+                state: "Inbound",
+                gate: fgate,
+                manifests: []
+            };
+
+            generatePassengerManifestForFlight(newFlight);
+            airportDatabaseState.flights.push(newFlight);
+            renderAirspaceRadarStack();
+        }
+
+        function deployFlightManifestToCustomsRegistry(flightObj) {
+            flightObj.manifests.forEach(pax => {
+                // Profiles get sent to customs screening panel if passport is expired OR baggage scan throws alert
+                if (!pax.passportValid || pax.baggageScanFlagged) {
+                    // Verify if duplicate object is already tracked before committing arrays
+                    if (!airportDatabaseState.flaggedCustomsProfiles.some(p => p.passengerId === pax.passengerId)) {
+                        pax.sourceFlightId = flightObj.id;
+                        airportDatabaseState.flaggedCustomsProfiles.push(pax);
+                    }
+                }
+            });
+        }
+
+        /* AIRSPACE QUEUE OVERRIDE ACTIONS PRIVILEGES INTERACTION */
+        function triggerEmergencyLandingQueueVectorBump(flightIdx) {
+            let targetFlight = airportDatabaseState.flights[flightIdx];
+            if (!targetFlight || targetFlight.state !== "Inbound") return;
+
+            // Instantly elevate state position to front of sequence array
+            targetFlight.state = "Final Approach";
+            targetFlight.fuel = Math.min(targetFlight.fuel + 5, 25); // Emergency fuel safety adjustment factor logic split
+            
+            renderAirspaceRadarStack();
+        }
+
+        /* CUSTOMS DISPATCH DECISION APPROVAL COMMAND ACTIONS */
+        function processCustomsClearanceResolution(paxIdx, resolutionDecisionString) {
+            let targetProfile = airportDatabaseState.flaggedCustomsProfiles[paxIdx];
+            if (!targetProfile) return;
+
+            if (resolutionDecisionString === 'DEPORT_DENIED') {
+                alert(`SECURITY INFRUCTION ACTION SYSTEM: Passenger identity ${targetProfile.fullName} entry has been formally denied. Transferring profile to terminal local custody zone.`);
+            } else {
+                // Approved entry processing pathway clear flags
+                console.log(`Passenger ${targetProfile.fullName} manually cleared by control supervisor.`);
+            }
+
+            // Remove profile from pending queue stack arrays
+            airportDatabaseState.flaggedCustomsProfiles.splice(paxIdx, 1);
+            renderCustomsScreeningStack();
+        }
+
+        /* UI RENDERING LAYOUT ENGINE DOM WRITERS */
+        function renderAirspaceRadarStack() {
+            const container = document.getElementById('frame-airspace-stack');
+            container.innerHTML = '';
+
+            if (airportDatabaseState.flights.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding-top:40px; color:#4a5568; font-size:13px;">Airspace Sector Empty. Scanning for incoming telemetry feeds...</div>`;
+                return;
+            }
+
+            airportDatabaseState.flights.forEach((flight, idx) => {
+                let isFuelEmergency = flight.fuel <= 20;
+                let isFlyable = (flight.state === "Inbound" || flight.state === "Final Approach");
                 
-                let card = document.createElement('div');
-                card.className = `op-card ${isSelected}`;
-                card.onclick = () => selectAgentSlotPointer(idx);
-                
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>[${op.id}] ${op.name}</span>
-                        <span class="status-badge ${badgeClass}">${op.status}</span>
-                    </div>
-                    <div class="op-meta">
-                        <span>NET: ${op.netrunning} | WET: ${op.wetwork} | SOC: ${op.socialEng}</span>
-                    </div>
-                    <div class="heat-wrapper">
-                        HEAT RISK: ${op.heat}%
-                        <div class="heat-bar-outer">
-                            <div class="heat-bar-inner ${op.heat >= 75 ? 'heat-critical' : ''}" style="width: ${op.heat}%;"></div>
+                let stateClass = 'state-inbound';
+                if(flight.state === "Final Approach") stateClass = 'state-approach';
+                if(flight.state === "Landed") stateClass = 'state-landed';
+                if(flight.state === "At Gate") stateClass = 'state-atgate';
+
+                let row = document.createElement('div');
+                row.className = `flight-row ${isFuelEmergency && isFlyable ? 'emergency-status' : ''}`;
+
+                row.innerHTML = `
+                    <div class="flight-meta">
+                        <div>
+                            <strong style="font-size:15px; color:#fff;">${flight.id}</strong>
+                            <span style="display:block; font-size:11px; color:#718096; margin-top:2px;">Orig: ${flight.origin}</span>
+                        </div>
+                        <div>
+                            <span class="state-track ${stateClass}">${flight.state}</span>
+                            <span style="display:block; font-size:11px; text-align:center; color:#718096; margin-top:4px;">${flight.gate}</span>
+                        </div>
+                        <div>
+                            <span style="font-weight:bold; color: ${isFuelEmergency && isFlyable ? 'var(--alert-red)' : 'var(--success-green)'}">
+                                FUEL: ${flight.fuel}%
+                            </span>
+                            <span style="display:block; font-size:10px; color:#718096; margin-top:2px;">PAX COUNTS: ${flight.manifests.length}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            ${(flight.state === 'Inbound') ? 
+                                `<button class="btn btn-danger" style="font-size:10px; padding:4px 6px;" onclick="triggerEmergencyLandingQueueVectorBump(${idx})">🚨 BUMP</button>` : 
+                                `<button class="btn btn-disabled" style="font-size:10px; padding:4px 6px;" disabled>HOLD</button>`
+                            }
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                container.appendChild(row);
             });
-            document.getElementById('lbl-op-count').innerText = `${nodeDatabaseState.operatives.filter(o=>o.status==='Active').length}/${nodeDatabaseState.operatives.length}`;
         }
 
-        function renderCorporateTargetsList() {
-            const container = document.getElementById('frame-targets-list');
+        function renderCustomsScreeningStack() {
+            const container = document.getElementById('frame-customs-stack');
+            const counterLabel = document.getElementById('lbl-customs-count');
+            
             container.innerHTML = '';
+            counterLabel.innerText = `${airportDatabaseState.flaggedCustomsProfiles.length} Flagged Profiles Pending`;
 
-            nodeDatabaseState.targets.forEach((tg, idx) => {
-                let isSelected = (nodeDatabaseState.activeSelectedTargetIdx === idx) ? 'selected' : '';
-                let difficultyColor = tg.difficulty === 'Low' ? varFormat('--neon-green') : (tg.difficulty === 'Medium' ? varFormat('--alert-orange') : varFormat('--neon-red'));
-                
+            if (airportDatabaseState.flaggedCustomsProfiles.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; margin-top: 50px; color:#4a5568; font-size:13px; font-style:italic;">
+                        No profiles currently flagged for secondary inspection. Arriving passenger streams operating nominally...
+                    </div>`;
+                return;
+            }
+
+            airportDatabaseState.flaggedCustomsProfiles.forEach((pax, idx) => {
+                let passportBadge = pax.passportValid ? `<span class="flag-indicator flag-passed">VALID</span>` : `<span class="flag-indicator flag-failed">❌ EXPIRED</span>`;
+                let baggageBadge = pax.baggageScanFlagged ? `<span class="flag-indicator flag-failed">⚠️ CONTRABAND_FLAG</span>` : `<span class="flag-indicator flag-passed">CLEARED</span>`;
+
                 let card = document.createElement('div');
-                card.className = `target-card ${isSelected}`;
-                card.onclick = () => selectTargetSlotPointer(idx);
+                card.className = "passenger-clearance-box";
 
                 card.innerHTML = `
-                    <div style="font-weight:bold; font-size:13px; color:#fff;">${tg.corp}</div>
-                    <div style="font-size:12px; margin-top:3px; color:var(--neon-green)">📍 ${tg.node}</div>
-                    <div class="op-meta" style="margin-top:8px;">
-                        <span>SEC_RATING: <strong style="color:${difficultyColor}">${tg.securityRating}%</strong></span>
-                        <span style="color:#fff;">DATA_YIELD: ${tg.payout}cr</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border-blue); padding-bottom:6px;">
+                        <span style="font-weight:bold; color:#fff; font-size:14px;">${pax.fullName} <small style="color:var(--sky-blue); font-weight:normal;">(${pax.passengerId})</small></span>
+                        <span style="font-family:monospace; font-size:11px; background:#1c3d5a; padding:2px 6px; border-radius:2px;">FLIGHT: ${pax.sourceFlightId}</span>
+                    </div>
+                    
+                    <div class="pax-profile-grid">
+                        <div>CITIZENSHIP: <span style="color:#fff;">${pax.citizenship}</span></div>
+                        <div>PASSPORT LOGS: ${passportBadge}</div>
+                        <div style="grid-column: span 2; margin-top:4px;">X-RAY SCANNER FEED: ${baggageBadge}</div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:12px; justify-content: flex-end;">
+                        <button class="btn btn-danger" onclick="processCustomsClearanceResolution(${idx}, 'DEPORT_DENIED')">Deport / Deny Entry</button>
+                        <button class="btn btn-success" onclick="processCustomsClearanceResolution(${idx}, 'APPROVE_CLEAR')">Acknowledge &amp; Clear</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
-        }
-
-        function varFormat(varName) { return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
-
-        function refreshGlobalIntelligencePanelMetrics() {
-            document.getElementById('lbl-stats-credits').innerText = nodeDatabaseState.metrics.exploitCredits;
-            document.getElementById('lbl-stats-heists').innerText = `${nodeDatabaseState.metrics.completedExtractions} nodes cracked`;
-        }
-
-        /* SELECTION PROFILE HANDLERS */
-        function selectAgentSlotPointer(idx) {
-            if(nodeDatabaseState.isSimulationRunning) return;
-            let op = nodeDatabaseState.operatives[idx];
-            if(op.status !== 'Active') {
-                writeLineToLogFeed(`[DENIED] Cannot dispatch agent ${op.name}. Status matches invalid protocol: ${op.status}.`, 'alert');
-                return;
-            }
-            nodeDatabaseState.activeSelectedAgentIdx = idx;
-            document.getElementById('lbl-desk-agent').innerText = op.name;
-            renderOperativesProfilesList();
-            evaluateDispatchDeskReadinessState();
-        }
-
-        function selectTargetSlotPointer(idx) {
-            if(nodeDatabaseState.isSimulationRunning) return;
-            nodeDatabaseState.activeSelectedTargetIdx = idx;
-            document.getElementById('lbl-desk-target').innerText = nodeDatabaseState.targets[idx].node;
-            renderCorporateTargetsList();
-            evaluateDispatchDeskReadinessState();
-        }
-
-        function evaluateDispatchDeskReadinessState() {
-            const btn = document.getElementById('btn-initialize-heist');
-            if(nodeDatabaseState.activeSelectedAgentIdx !== null && nodeDatabaseState.activeSelectedTargetIdx !== null) {
-                btn.removeAttribute('disabled');
-            } else {
-                btn.setAttribute('disabled', 'true');
-            }
-        }
-
-        /* RANDOM DATAGENERATION INJECTORS */
-        function generateRandomOperativeProfile() {
-            const handles = ["Cipher", "Null_Pointer", "Ghost_Byte", "Kilo_Volt", "Proxy_V", "Daemon_Flux", "Burner_Jack", "Glitch_Core"];
-            const genericId = "OP-" + Math.floor(10 + Math.random() * 90);
-            const randomName = handles[Math.floor(Math.random() * handles.length)] + "_" + Math.floor(Math.random() * 99);
-            
-            nodeDatabaseState.operatives.push({
-                id: genericId,
-                name: randomName,
-                status: "Active",
-                heat: Math.floor(5 + Math.random() * 25),
-                netrunning: Math.floor(30 + Math.random() * 65),
-                wetwork: Math.floor(20 + Math.random() * 75),
-                socialEng: Math.floor(20 + Math.random() * 75)
-            });
-            
-            writeLineToLogFeed(`[ROSTER] Registered new freelance operator: ${randomName} under channel index allocation.`, 'success');
-            renderOperativesProfilesList();
-        }
-
-        function writeLineToLogFeed(text, semanticClass = '') {
-            const logsFrame = document.getElementById('frame-terminal-logs');
-            let timestamp = new Date().toLocaleTimeString().split(' ')[0];
-            
-            let line = document.createElement('div');
-            line.className = `log-line ${semanticClass}`;
-            line.innerText = `[${timestamp}] ${text}`;
-            
-            logsFrame.appendChild(line);
-            logsFrame.scrollTop = logsFrame.scrollHeight;
-        }
-
-        /* SIMULATED TIMED INFILTRATION LOOP PIPELINE */
-        function executeInfiltrationSequence() {
-            if(nodeDatabaseState.isSimulationRunning) return;
-            
-            nodeDatabaseState.isSimulationRunning = true;
-            document.getElementById('btn-initialize-heist').setAttribute('disabled', 'true');
-            
-            let op = nodeDatabaseState.operatives[nodeDatabaseState.activeSelectedAgentIdx];
-            let tg = nodeDatabaseState.targets[nodeDatabaseState.activeSelectedTargetIdx];
-
-            writeLineToLogFeed(`⚡ BREACH INITIALIZED // Sending ${op.name} down pipeline into ${tg.corp} (${tg.node})...`, 'success');
-
-            let progressionStage = 0;
-            
-            // Sequential multi-stage logging simulation
-            let simulationIntervalTimer = setInterval(() => {
-                progressionStage++;
-                
-                if (progressionStage === 1) {
-                    writeLineToLogFeed(`[STAGE 1] Bypassing external perimeter subnets. Testing proxy relays...`);
-                    op.heat += Math.floor(Math.random() * 8) + 4;
-                    renderOperativesProfilesList();
-                } 
-                else if (progressionStage === 2) {
-                    // Skill-based matrix processing calculations logic split
-                    let skillValueToTest = (tg.securityRating > 60) ? op.netrunning : Math.max(op.wetwork, op.socialEng);
-                    writeLineToLogFeed(`[STAGE 2] Decryption sequence engagement. Executing skill algorithms (Check Rating: ${skillValueToTest}% vs Core Base Security: ${tg.securityRating}%)...`);
-                    
-                    if (skillValueToTest + Math.floor(Math.random() * 30) < tg.securityRating) {
-                        writeLineToLogFeed(`[WARNING] ICE intrusion alert flagged! Countermeasures tracing packet logs.`, 'alert');
-                        op.heat += 25;
-                    } else {
-                        writeLineToLogFeed(`[SUCCESS] Decryption matrix cracked cleanly. Siphoning directory nodes.`, 'success');
-                        op.heat += 5;
-                    }
-                    renderOperativesProfilesList();
-                } 
-                else if (progressionStage === 3) {
-                    clearInterval(simulationIntervalTimer);
-                    concludeHeistOperationLogic(op, tg);
-                }
-            }, 2200);
-        }
-
-        function concludeHeistOperationLogic(op, tg) {
-            nodeDatabaseState.isSimulationRunning = false;
-            
-            // Check terminal threshold rules for lockdown trigger states
-            if (op.heat >= 100) {
-                op.heat = 100;
-                renderOperativesProfilesList();
-                triggerLockdownCrisisScreen(op);
-                return;
-            }
-
-            // Standard final computation parsing
-            let calculationChanceBasis = (op.netrunning * 0.5) + (Math.random() * 50);
-            if (calculationChanceBasis >= tg.securityRating * 0.7) {
-                // Successful infiltration resolution
-                writeLineToLogFeed(`[COMPLETED] Data cache payload extracted securely. Severing connections down node link.`, 'success');
-                nodeDatabaseState.metrics.exploitCredits += tg.payout;
-                nodeDatabaseState.metrics.completedExtractions++;
-            } else {
-                // Operative dropped connection or MIA state conversion event
-                writeLineToLogFeed(`[FAILED] Connection lost mid-transfer. Operative ${op.name} failed extraction parameters. Shunting to MIA roster state.`, 'danger');
-                op.status = "MIA";
-            }
-
-            // Reset operational configurations
-            nodeDatabaseState.activeSelectedAgentIdx = null;
-            nodeDatabaseState.activeSelectedTargetIdx = null;
-            document.getElementById('lbl-desk-agent').innerText = "[NONE_SELECTED]";
-            document.getElementById('lbl-desk-target').innerText = "[NONE_SELECTED]";
-            
-            renderOperativesProfilesList();
-            refreshGlobalIntelligencePanelMetrics();
-            evaluateDispatchDeskReadinessState();
-        }
-
-        /* CRISIS PERMISSIONS RECOVERY MANAGEMENTS HANDLERS */
-        function triggerLockdownCrisisScreen(op) {
-            activeLockdownAgentPointer = op;
-            
-            // Generate a random uppercase text string to act as bypass authorization code
-            const characterSeedTokens = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            generatedLockdownSecretKeyString = "";
-            for (let i = 0; i < 5; i++) {
-                generatedLockdownSecretKeyString += characterSeedTokens.charAt(Math.floor(Math.random() * characterSeedTokens.length));
-            }
-
-            document.getElementById('lbl-lockdown-agent-name').innerText = op.name;
-            document.getElementById('lbl-lockdown-key-hint').innerText = generatedLockdownSecretKeyString;
-            document.getElementById('input-lockdown-bypass-key').value = "";
-            
-            writeLineToLogFeed(`🚨 [CRITICAL ALERT] TRACE OVER 100% — LOCKDOWN PROTOCOLS ENGAGED AT HARDWARE LAYER.`, 'danger');
-            document.getElementById('lockdown-emergency-screen').classList.remove('hidden');
-        }
-
-        function executeEmergencyWipePurgeOverride() {
-            const userInputText = document.getElementById('input-lockdown-bypass-key').value.trim().toUpperCase();
-            
-            if (userInputText !== generatedLockdownSecretKeyString) {
-                alert("ACCESS DENIED: Administrative override cryptographic signature checksum mismatch. Retry bypass alignment.");
-                return;
-            }
-
-            // Complete a systemic file destruction wiping out individual index allocations profile values
-            activeLockdownAgentPointer.status = "Burned";
-            activeLockdownAgentPointer.heat = 0;
-            
-            writeLineToLogFeed(`[ADMIN_OVERRIDE] Data purge completed. Operative metrics corrupted. Signature file set to BURNED.`, 'danger');
-            
-            // Reset systems console
-            nodeDatabaseState.activeSelectedAgentIdx = null;
-            nodeDatabaseState.activeSelectedTargetIdx = null;
-            document.getElementById('lbl-desk-agent').innerText = "[NONE_SELECTED]";
-            document.getElementById('lbl-desk-target').innerText = "[NONE_SELECTED]";
-            
-            document.getElementById('lockdown-emergency-screen').classList.add('hidden');
-            activeLockdownAgentPointer = null;
-            
-            renderOperativesProfilesList();
-            evaluateDispatchDeskReadinessState();
         }
     </script>
 </body>
