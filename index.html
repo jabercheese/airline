@@ -3,437 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dubai Airways - Booking Dashboard</title>
+    <title>Dubai Airways - Internal Office Desktop Network</title>
     <style>
         :root {
-            --primary: #9e1b32; /* Deep Emirates-style Red */
+            --primary: #9e1b32;
             --primary-hover: #7a1425;
             --gold: #d4af37;
-            --dark: #222;
-            --light: #f8f9fa;
-            --border: #ccc;
+            --dark: #1e2022;
+            --light: #f4f6f9;
+            --border: #ccd1d9;
+            --success: #28a745;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background: #f0f2f5; color: var(--dark); padding-bottom: 60px; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        body { background: var(--light); color: var(--dark); padding-bottom: 60px; }
         
-        /* Header & Logo */
-        header { background: #fff; border-bottom: 4px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* Corporate Terminal Header */
+        header { background: #fff; border-bottom: 4px solid var(--gold); padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .logo-container { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; border: 2px solid var(--gold); }
-        .logo-text { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
+        .logo-icon { width: 40px; height: 40px; background: var(--primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; border: 1px solid var(--gold); }
+        .logo-text { font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; }
         .logo-text span { color: var(--gold); font-weight: 400; }
         
-        .nav-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .nav-btn:hover { background: var(--primary-hover); }
+        .system-status { display: flex; align-items: center; gap: 15px; }
+        .status-pill { background: #e8ecef; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4a5568; }
 
-        /* Container & Grid Setup */
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .view-section { display: none; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .view-section.active { display: block; }
+        /* Workspace Grid Container */
+        .workspace { max-width: 1400px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 240px 1fr; gap: 25px; }
+        
+        /* Navigation Sidebar */
+        .sidebar { background: #fff; border-radius: 8px; padding: 20px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); height: fit-content; }
+        .sidebar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a0aec0; margin-bottom: 10px; padding-left: 10px; font-weight: 700; }
+        .nav-group { margin-bottom: 25px; }
+        .sidebar button { width: 100%; text-align: left; padding: 10px 12px; border: none; background: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; color: #4a5568; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; transition: 0.2s; }
+        .sidebar button:hover { background: #f7fafc; color: var(--primary); }
+        .sidebar button.active { background: var(--primary); color: white; }
+        
+        /* Content Sections */
+        .main-panel { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); min-height: 600px; }
+        .panel-section { display: none; }
+        .panel-section.active { display: block; }
 
-        h2 { margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        h3 { margin: 15px 0 10px; color: #444; }
+        h2 { margin-bottom: 20px; color: var(--primary); font-size: 24px; font-weight: 700; border-bottom: 2px solid #edf2f7; padding-bottom: 12px; }
+        h3 { margin: 20px 0 10px; color: #2d3748; font-size: 16px; }
 
-        /* Form Controls */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        /* Shared Forms UI */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-weight: 6px; font-size: 14px; color: #555; }
-        select, input { padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 15px; }
+        label { font-weight: 600; font-size: 13px; color: #4a5568; }
+        select, input { padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; color: #2d3748; background: #fff; }
+        select:focus, input:focus { border-color: var(--primary); outline: none; }
         
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f4f4f4; color: var(--dark); }
+        /* Live Tables */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background-color: #f7fafc; color: #4a5568; font-weight: 600; }
+        tr:hover td { background-color: #f8fafc; }
         
-        /* Dashboard Cards */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card.gold-card { border-left-color: var(--gold); }
-        .card h4 { font-size: 14px; text-transform: uppercase; color: #777; margin-bottom: 5px; }
-        .card p { font-size: 24px; font-weight: bold; color: var(--dark); }
+        /* Dynamic Matrix Metrics Dashboard */
+        .metrics-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: #fff; padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0; border-top: 4px solid var(--primary); }
+        .metric-card.gold { border-top-color: var(--gold); }
+        .metric-card h4 { font-size: 12px; text-transform: uppercase; color: #718096; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .metric-card p { font-size: 26px; font-weight: 700; color: #1a202c; }
 
-        /* Fare Options layout */
-        .fare-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
-        .fare-class-box { background: #fdfdfd; border: 1px solid #e0e0e0; padding: 20px; border-radius: 6px; }
-        .fare-card { border: 2px solid #eee; padding: 15px; margin-top: 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; position: relative; }
-        .fare-card:hover { border-color: var(--primary); background: #fffbfb; }
-        .fare-card.selected { border-color: var(--primary); background: #fff5f6; box-shadow: 0 0 10px rgba(158,27,50,0.1); }
-        .fare-price { position: absolute; right: 15px; top: 15px; font-size: 18px; font-weight: bold; color: var(--primary); }
+        /* Ticket Selection Box */
+        .fare-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
+        .class-bucket { background: #f7fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 6px; }
+        .fare-tier-card { border: 2px solid #e2e8f0; background: #fff; padding: 15px; margin-top: 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; position: relative; }
+        .fare-tier-card:hover { border-color: var(--primary); }
+        .fare-tier-card.selected { border-color: var(--primary); background: #fff5f6; }
+        .price-tag-display { position: absolute; right: 15px; top: 15px; font-size: 16px; font-weight: 700; color: var(--primary); }
+        .per-adult-subtext { font-size: 11px; color: #718096; font-weight: 400; display: block; }
 
-        /* Seat Grid Mapping */
-        .seat-map-wrapper { display: flex; flex-direction: column; align-items: center; background: #fafafa; padding: 20px; border-radius: 8px; border: 1px dashed #ccc; }
-        .aisle { width: 30px; }
-        .seat-row { display: flex; align-items: center; margin-bottom: 6px; gap: 5px; }
-        .row-num { width: 30px; text-align: center; font-size: 12px; color: #777; font-weight: bold; }
-        .seat { width: 32px; height: 32px; background: #e0e0e0; border: 1px solid #b5b5b5; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; user-select: none; }
-        .seat.business { background: #dcd1f0; border-color: #9b7fd4; width: 45px; }
-        .seat.selected { background: #4caf50 !important; color: white; border-color: #388e3c; }
-        .seat.occupied { background: #e57373 !important; border-color: #d32f2f; cursor: not-allowed; color: white; }
-        .seat.extra-legroom { background: #ffe082; border-color: #ffb300; }
+        /* Premium Office Airplane Grid Maps */
+        .cabin-deck-container { display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; max-width: 500px; margin: 0 auto; }
+        .aisle-gap { width: 30px; }
+        .deck-row { display: flex; align-items: center; margin-bottom: 6px; gap: 6px; }
+        .row-index { width: 30px; text-align: center; font-size: 12px; color: #718096; font-weight: bold; }
+        .seat-unit { width: 34px; height: 34px; background: #edf2f7; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; user-select: none; color: #4a5568; }
+        .seat-unit.business-deck { background: #ebf8ff; border-color: #bee3f8; width: 48px; height: 38px; color: #2b6cb0; }
+        .seat-unit.selected { background: #48bb78 !important; color: white; border-color: #38a169; }
+        .seat-unit.booked-out { background: #e53e3e !important; border-color: #c53030; cursor: not-allowed; color: white; }
+        .seat-unit.premium-legroom { background: #feebc8; border-color: #fbd38d; color: #b7791f; }
 
-        /* Utility/Buttons */
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        /* Global UI Utility Triggers */
+        .btn { padding: 11px 22px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-success { background: #28a745; color: white; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; }
-        .badge-active { background: #d4edda; color: #155724; }
-        .badge-suspended { background: #fff3cd; color: #856404; }
+        .btn-secondary { background: #e2e8f0; color: #4a5568; }
+        .btn-secondary:hover { background: #cbd5e0; }
+        .btn-danger { background: #e53e3e; color: white; }
+        .btn-danger:hover { background: #c53030; }
+        .btn-success { background: var(--success); color: white; }
         
-        .modal-prompt { background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .cash-alert-banner { background: #fffaf0; border-left: 5px solid #dd6b20; padding: 18px; margin: 20px 0; border-radius: 4px; color: #dd6b20; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-active { background: #c6f6d5; color: #22543d; }
+        .badge-suspended { background: #feebc8; color: #744210; }
+        
+        .passenger-info-block { border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 15px; background: #fafbfc; }
+        .passenger-info-block h4 { font-size: 14px; margin-bottom: 10px; color: var(--primary); border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Header & Brand Logo -->
     <header>
         <div class="logo-container">
-            <div class="logo-icon">D</div>
-            <div class="logo-text">DUBAI <span>AIRWAYS</span></div>
+            <div class="logo-icon">DXB</div>
+            <div class="logo-text">DUBAI <span>AIRWAYS</span> <small style="font-size:11px; font-weight:600; color:#718096; background:#edf2f7; padding:2px 6px; border-radius:4px; margin-left:5px;">Internal Terminal v4.2</small></div>
         </div>
-        <div>
-            <button class="nav-btn" id="portal-toggle-btn" onclick="togglePortalView()">Staff Portal Login</button>
+        <div class="system-status">
+            <div class="status-pill">System Mode: <strong style="color:var(--primary);" id="active-session-label">Guest Terminal</strong></div>
         </div>
     </header>
 
-    <div class="container">
-
-        <!-- ================= BOOKING ENGINE FLOW ================= -->
+    <div class="workspace">
         
-        <!-- STEP 1: Route Search -->
-        <div id="view-search" class="view-section active">
-            <h2>Book Your Flight</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>From:</label>
-                    <select id="search-from" onchange="handleRouteLock('from')"></select>
-                </div>
-                <div class="form-group">
-                    <label>To:</label>
-                    <select id="search-to" onchange="handleRouteLock('to')"></select>
-                </div>
-                <div class="form-group">
-                    <label>Adults:</label>
-                    <input type="number" id="search-adults" value="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Children:</label>
-                    <input type="number" id="search-children" value="0" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Outbound Date:</label>
-                    <input type="date" id="search-outbound">
-                </div>
-                <div class="form-group">
-                    <label>Inbound Date (Blank for One-Way):</label>
-                    <input type="date" id="search-inbound">
-                </div>
-                <div class="form-group">
-                    <label>Promo Code:</label>
-                    <input type="text" id="search-promo" placeholder="Optional">
-                </div>
+        <div class="sidebar">
+            <div class="sidebar-title">Identity Login</div>
+            <div class="nav-group">
+                <button id="nav-btn-login" class="active" onclick="switchTab('view-gate-auth')">🔑 Desk Authentication</button>
             </div>
             
-            <div id="free-ticket-container" style="display:none; background:#fff9db; padding:15px; border-radius:5px; margin-bottom:15px;">
-                <label style="color:#856404; font-weight:bold;">Manager Privilege: Reason for Waiver / Free Ticket</label>
-                <input type="text" id="free-ticket-reason" style="width:100%; margin-top:5px;" placeholder="Enter legal/operational reason here...">
+            <div id="menu-group-employee" class="hidden">
+                <div class="sidebar-title">Employee Booking Desk</div>
+                <div class="nav-group">
+                    <button id="nav-btn-search" onclick="switchTab('view-booking-search')">✈️ New Reservation</button>
+                    <button id="nav-btn-lookup" onclick="switchTab('view-ticket-lookup')">📂 Ticket Search &amp; Ops</button>
+                </div>
             </div>
 
-            <button class="btn btn-primary" onclick="processSearch()">Search Flights</button>
-            
-            <div style="margin-top: 40px; background: #fff; padding: 20px; border-radius: 6px; border: 1px solid #ddd;">
-                <h3>Retrieve / Manage Existing Booking</h3>
+            <div id="menu-group-manager" class="hidden">
+                <div class="sidebar-title">Manager Admin Console</div>
+                <div class="nav-group">
+                    <button id="nav-btn-dash" onclick="switchTab('view-manager-dash')">📈 Global Revenues</button>
+                    <button id="nav-btn-staff" onclick="switchTab('view-manager-staff')">👥 Staff Management</button>
+                    <button id="nav-btn-promo" onclick="switchTab('view-manager-promos')">🏷️ Promo Controls</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+
+            <div id="view-gate-auth" class="panel-section active">
+                <h2>Desk Authentication Gate</h2>
+                <p style="margin-bottom:20px; color:#718096; font-size:14px;">Sign in with authorized agency credentials to unlock localized employee ticketing desks or manager metrics configurations logs.</p>
+                <div class="form-grid" style="max-width: 450px;">
+                    <div class="form-group">
+                        <label>Agent Profile Username:</label>
+                        <input type="text" id="auth-user" value="agent01">
+                    </div>
+                    <div class="form-group">
+                        <label>Security Passcode:</label>
+                        <input type="password" id="auth-pass" value="5678">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="executePortalLogin()">Unlock Office Desktop</button>
+                
+                <div id="auth-active-logout-box" class="hidden" style="margin-top: 30px; padding-top: 20px; border-top: 2px dashed #edf2f7;">
+                    <p style="margin-bottom:15px; font-weight:600;" id="auth-logged-msg"></p>
+                    <button class="btn btn-secondary" onclick="executePortalLogout()">Lock Station Console</button>
+                </div>
+            </div>
+
+
+            <div id="view-booking-search" class="panel-section">
+                <h2>New Reservation Workspace</h2>
                 <div class="form-grid">
-                    <div class="form-group"><label>Booking ID:</label><input type="text" id="retrieve-id" placeholder="XX1111"></div>
-                    <div class="form-group"><label>Last Name (First Adult):</label><input type="text" id="retrieve-lastname"></div>
-                </div>
-                <button class="btn btn-secondary" onclick="retrieveBooking()">Find Booking</button>
-            </div>
-        </div>
-
-        <!-- STEP 2: Fare Selection -->
-        <div id="view-fares" class="view-section">
-            <h2>Select Your Fares</h2>
-            <div id="fare-flight-summary" style="margin-bottom: 20px; font-weight: 500;"></div>
-            
-            <div class="fare-container">
-                <!-- Economy options -->
-                <div class="fare-class-box">
-                    <h3>Economy Class</h3>
-                    <div class="fare-card" id="fare-E-saver" onclick="selectFare('E-saver')">
-                        <strong>E-Saver</strong>
-                        <p style="font-size:13px; color:#666; margin-top:5px;">• 20KG Baggage<br>• Complimentary Meal<br>• Refundable/Changeable via rules</p>
-                        <div class="fare-price" id="price-E-saver">AED 0</div>
+                    <div class="form-group">
+                        <label>Departure Station (From):</label>
+                        <select id="flight-from" onchange="validateHubRule('flight-from')"></select>
                     </div>
-                    <div class="fare-card" id="fare-E-flex" onclick="selectFare('E-flex')">
-                        <strong>E-Flex</strong>
-                        <p style="font-size:13px; color:#666; margin-top:5px;">• 30KG Baggage<br>• Complimentary Meal<br>• Completely Flexible (No Fee)</p>
-                        <div class="fare-price" id="price-E-flex">AED 0</div>
+                    <div class="form-group">
+                        <label>Arrival Station (To):</label>
+                        <select id="flight-to" onchange="validateHubRule('flight-to')"></select>
                     </div>
-                </div>
-
-                <!-- Business options -->
-                <div class="fare-class-box">
-                    <h3>Business Class</h3>
-                    <div class="fare-card" id="fare-B-saver" onclick="selectFare('B-saver')">
-                        <strong>B-Saver</strong>
-                        <p style="font-size:13px; color:#666; margin-top:5px;">• 30KG Baggage<br>• Luxury Dining Meal<br>• Flexible</p>
-                        <div class="fare-price" id="price-B-saver">AED 0</div>
+                    <div class="form-group">
+                        <label>Adult Capacity (12+ yrs):</label>
+                        <input type="number" id="qty-adults" value="1" min="1">
                     </div>
-                    <div class="fare-card" id="fare-B-flex" onclick="selectFare('B-flex')">
-                        <strong>B-Flex</strong>
-                        <p style="font-size:13px; color:#666; margin-top:5px;">• 40KG Baggage<br>• Luxury Dining & Lounge Access<br>• Completely Flexible</p>
-                        <div class="fare-price" id="price-B-flex">AED 0</div>
+                    <div class="form-group">
+                        <label>Child Capacity (2-11 yrs):</label>
+                        <input type="number" id="qty-children" value="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Outbound Flight Date:</label>
+                        <input type="date" id="date-outbound">
+                    </div>
+                    <div class="form-group">
+                        <label>Inbound Flight Date (Blank for One-Way):</label>
+                        <input type="date" id="date-inbound">
+                    </div>
+                    <div class="form-group">
+                        <label>Apply Office Promo Coupon:</label>
+                        <input type="text" id="input-promo" placeholder="e.g. DXB20">
                     </div>
                 </div>
-            </div>
 
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="changeView('view-search')">Back</button>
-                <button class="btn btn-primary" onclick="proceedToSeats()">Proceed to Seat Selection</button>
-            </div>
-        </div>
-
-        <!-- STEP 3: Seat Selection -->
-        <div id="view-seats" class="view-section">
-            <h2>Select Seats (Airbus A320)</h2>
-            <p style="margin-bottom: 15px;">Please select seats for all passengers. Row 1 and Rows 11-12 have Extra Legroom charges applied.</p>
-            <div id="seat-selection-counter" style="font-weight: bold; margin-bottom: 10px; color: var(--primary);"></div>
-            
-            <div class="seat-map-wrapper">
-                <div style="background:#333; color:white; width: 200px; text-align:center; padding:5px; margin-bottom:20px; border-radius:3px;">Flight Deck / Front</div>
-                <div id="dynamic-seat-map"></div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="changeView('view-fares')">Back</button>
-                <button class="btn btn-primary" onclick="finalizeBooking()">Confirm & Book Flight</button>
-            </div>
-        </div>
-
-        <!-- STEP 4: Confirmation Screen -->
-        <div id="view-confirmation" class="view-section">
-            <h2 style="color: #28a745;">Booking Confirmed Successfully!</h2>
-            <div class="modal-prompt">
-                <h3>💵 ACTION REQUIRED: Counter Cash Collection Prompt</h3>
-                <p id="cash-prompt-msg" style="font-size: 18px; font-weight: bold; margin-top: 10px; color:#155724;"></p>
-            </div>
-
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 6px; margin-top: 20px;">
-                <h3>Ticket Itinerary Details</h3>
-                <p><strong>Booking Reference ID:</strong> <span id="conf-id" style="font-size: 18px; color: var(--primary); font-weight: bold;"></span></p>
-                <p><strong>Route:</strong> <span id="conf-route"></span></p>
-                <p><strong>Passengers:</strong> <span id="conf-passengers"></span></p>
-                <p><strong>Fare Tier Selected:</strong> <span id="conf-fare"></span></p>
-                <p><strong>Assigned Seat(s):</strong> <span id="conf-seats"></span></p>
-            </div>
-
-            <button class="btn btn-primary" style="margin-top:20px;" onclick="resetToSearch()">Create Another Booking</button>
-        </div>
-
-        <!-- STEP 5: Manage / Modify Existing Ticket Screen -->
-        <div id="view-modify-ticket" class="view-section">
-            <h2>Modify or Cancel Reservation</h2>
-            <div style="background:#f9f9f9; padding:15px; border-radius:5px; margin-bottom:20px;">
-                <p><strong>Booking Reference:</strong> <span id="mod-summary-id"></span></p>
-                <p><strong>Current Itinerary:</strong> <span id="mod-summary-route"></span></p>
-                <p><strong>Total Value Paid:</strong> AED <span id="mod-summary-paid"></span></p>
-            </div>
-
-            <h3>Option A: Cancel Itinerary</h3>
-            <p style="font-size:13px; color:#555;">Cancelling returns refundable cash to the customer. Applicable tier cancellation penalities are deducted from the payout and final global dashboard revenues.</p>
-            <button class="btn btn-danger" style="margin-top:5px;" onclick="executeCancellation()">Cancel Booking & Process Refund</button>
-
-            <hr style="margin:25px 0;">
-
-            <h3>Option B: Modify Route & Dates</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>New Route Origin:</label>
-                    <select id="mod-from" onchange="handleModRouteLock('from')"></select>
+                <div id="manager-privilege-waiver-box" class="hidden" style="background:#fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <label style="color:#c05621; font-weight:700;">⭐ Administrative Privilege Waiver Override Triggered</label>
+                    <p style="font-size:12px; color:#dd6b20; margin-bottom:8px;">Authorized manager account active. Providing a mandatory waiver authorization reason sets individual fare costs automatically to AED 0.</p>
+                    <input type="text" id="txt-waiver-reason" placeholder="Enter valid official operational reason to issue complimentary seating...">
                 </div>
-                <div class="form-group">
-                    <label>New Route Destination:</label>
-                    <select id="mod-to" onchange="handleModRouteLock('to')"></select>
-                </div>
-                <div class="form-group">
-                    <label>New Outbound Date:</label>
-                    <input type="date" id="mod-date-out">
-                </div>
-                <div class="form-group">
-                    <label>New Return Date (Blank for One-Way):</label>
-                    <input type="date" id="mod-date-in">
-                </div>
+
+                <button class="btn btn-primary" onclick="executeFlightRouteQuery()">Calculate Flight Airfares</button>
             </div>
-            <button class="btn btn-success" onclick="calculateModificationFee()">Recalculate & Modify Ticket</button>
 
-            <button class="btn btn-secondary" style="margin-top:20px; display:block;" onclick="resetToSearch()">Back to Main Window</button>
-        </div>
+            <div id="view-booking-fares" class="panel-section">
+                <h2>Select Service Cabin Tier Matrix</h2>
+                <div id="fare-calc-itinerary-header" style="margin-bottom: 20px; font-weight:600; font-size:15px; color:#4a5568;"></div>
+                
+                <div class="fare-layout">
+                    <div class="class-bucket">
+                        <h3 style="color:var(--primary);">Economy Service Cabin</h3>
+                        
+                        <div class="fare-tier-card" id="tier-E-saver" onclick="selectFareTier('E-saver')">
+                            <strong>E-Saver Class</strong>
+                            <div class="price-tag-display" id="lbl-p-esaver">AED 0 <span class="per-adult-subtext">per adult</span></div>
+                            <p style="font-size:12px; color:#718096; margin-top:8px;">• 20KG Checked Baggage Allowance<br>• In-flight Refreshments Menu<br>• Custom Ticket Changes Subject to Admin Fee</p>
+                        </div>
 
+                        <div class="fare-tier-card" id="tier-E-flex" onclick="selectFareTier('E-flex')">
+                            <strong>E-Flex Class</strong>
+                            <div class="price-tag-display" id="lbl-p-eflex">AED 0 <span class="per-adult-subtext">per adult</span></div>
+                            <p style="font-size:12px; color:#718096; margin-top:8px;">• 30KG Checked Baggage Allowance<br>• In-flight Refreshments Menu<br>• Completely Flexible Ticket Management Modifiers</p>
+                        </div>
+                    </div>
 
-        <!-- ================= MANAGEMENT & STAFF SYSTEM ================= -->
-        
-        <!-- Login Window Section -->
-        <div id="view-login" class="view-section">
-            <h2>Internal Staff Authentication Portal</h2>
-            <div class="form-grid" style="max-width: 400px;">
-                <div class="form-group">
-                    <label>User Identity / ID Name:</label>
-                    <input type="text" id="login-username" value="admin">
+                    <div class="class-bucket">
+                        <h3 style="color:var(--gold);">Business Service Cabin</h3>
+                        
+                        <div class="fare-tier-card" id="tier-B-saver" onclick="selectFareTier('B-saver')">
+                            <strong>B-Saver Premium</strong>
+                            <div class="price-tag-display" id="lbl-p-bsaver">AED 0 <span class="per-adult-subtext">per adult</span></div>
+                            <p style="font-size:12px; color:#718096; margin-top:8px;">• 30KG Checked Baggage Weight Limits<br>• Premium Multi-Course Dining Lounge Experience<br>• Flexible Ticket Modification Modifiers</p>
+                        </div>
+
+                        <div class="fare-tier-card" id="tier-B-flex" onclick="selectFareTier('B-flex')">
+                            <strong>B-Flex Premium</strong>
+                            <div class="price-tag-display" id="lbl-p-bflex">AED 0 <span class="per-adult-subtext">per adult</span></div>
+                            <p style="font-size:12px; color:#718096; margin-top:8px;">• 40KG Checked Baggage Weight Limits<br>• Premium Lounge Access &amp; Chauffeur Privileges<br>• Completely Flexible Ticket Management Modifiers</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Passcode:</label>
-                    <input type="password" id="login-passcode" value="1234">
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="processLogin()">Authenticate</button>
-        </div>
 
-        <!-- Main Dashboard Control Panel Layout -->
-        <div id="view-dashboard" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2>Administrative Control Panel</h2>
-                <div>
-                    <span id="welcome-user-tag" style="margin-right:15px; font-weight:bold; color:#555;"></span>
-                    <button class="btn btn-secondary" onclick="processLogout()">Sign Out Portal</button>
+                <div class="btn-group" style="margin-top:25px; display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="changeView('view-booking-search')">Back to Parameters</button>
+                    <button class="btn btn-primary" onclick="proceedToSeatSelectionView()">Advance to Cabin Layout Grid</button>
                 </div>
             </div>
 
-            <!-- Global Earnings and Counts Counters Matrix -->
-            <div class="dashboard-grid">
-                <div class="card">
-                    <h4>Total Gross Earnings</h4>
-                    <p id="dash-earnings">AED 0.00</p>
+            <div id="view-booking-seats" class="panel-section">
+                <h2>Map Cabin Flight Seating (Airbus A320 Fleet)</h2>
+                <p style="margin-bottom: 15px; font-size:14px; color:#718096;">Map passenger group entries to open coordinates. Selected seats display live pricing parameters per unit before submission locks.</p>
+                <div id="lbl-seat-allotment-counter" style="font-weight: 700; font-size:15px; margin-bottom: 15px; color: var(--primary);">Rows Selected Counter: 0 / 0</div>
+                
+                <div class="cabin-deck-container">
+                    <div style="background:#2d3748; color:white; width: 100%; text-align:center; padding:6px; margin-bottom:20px; border-radius:4px; font-size:12px; font-weight:700; letter-spacing:1px;">FLIGHT NOSE / AVIONICS DECK</div>
+                    <div id="canvas-airplane-seat-layout"></div>
                 </div>
-                <div class="card gold-card">
-                    <h4>Economy Bookings</h4>
-                    <p id="dash-count-eco">0</p>
-                </div>
-                <div class="card gold-card">
-                    <h4>Business Bookings</h4>
-                    <p id="dash-count-biz">0</p>
+
+                <div class="btn-group" style="margin-top:25px; display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="changeView('view-booking-fares')">Back to Service Tiers</button>
+                    <button class="btn btn-primary" onclick="proceedToPassengerManifestView()">Advance to Manifest Enrollment</button>
                 </div>
             </div>
 
-            <!-- Conditional Display Controls Config Container for managers -->
-            <div id="manager-only-controls" style="display:none;">
-                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
-                    <h3>System Parameter Matrices (Fares, Gaps, Penalties)</h3>
+            <div id="view-booking-manifest" class="panel-section">
+                <h2>Passenger Manifest Profile Enrollment</h2>
+                <p style="color:#718096; font-size:14px; margin-bottom:20px;">Enter the exact official identity documents profiles parameters for all corporate travelers registered to this itinerary block.</p>
+                
+                <div id="passenger-manifest-input-container"></div>
+
+                <div class="btn-group" style="margin-top:25px; display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="changeView('view-booking-seats')">Back to Cabin Layout</button>
+                    <button class="btn btn-success" onclick="executeFinalItineraryCommit()">Generate Corporate Ticket Logs &amp; Invoices</button>
+                </div>
+            </div>
+
+            <div id="view-booking-receipt-invoice" class="panel-section">
+                <h2 style="color:var(--success);">Corporate Ticket Successfully Logged</h2>
+                
+                <div class="cash-alert-banner">
+                    <h3 style="margin-top:0; color:#c05621; font-weight:700;">💵 REGISTER OVER-THE-COUNTER CASH PAYMENT DUE</h3>
+                    <p id="lbl-cash-collection-prompt-msg" style="font-size:20px; font-weight:800; margin-top:5px;"></p>
+                </div>
+
+                <div style="background: #f7fafc; padding:25px; border-radius:6px; border:1px solid #e2e8f0; margin-top:20px;">
+                    <h3 style="margin-top:0; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Official Flight Itinerary Details</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:14px; margin-top:15px;">
+                        <div><strong>Unique System Booking ID:</strong> <span id="lbl-rcpt-id" style="font-size:16px; color:var(--primary); font-weight:700;"></span></div>
+                        <div><strong>Route Core Matrix:</strong> <span id="lbl-rcpt-route" style="font-weight:600;"></span></div>
+                        <div><strong>Selected Service Class:</strong> <span id="lbl-rcpt-tier" class="badge badge-active" style="background:#ebf8ff; color:#2b6cb0;"></span></div>
+                        <div><strong>Assigned Seat Coordinates:</strong> <span id="lbl-rcpt-seats" style="font-weight:600; color:var(--primary);"></span></div>
+                    </div>
+                    <div style="margin-top:20px; border-top:1px solid #e2e8f0; padding-top:15px;">
+                        <strong>Enrolled Manifest Registry:</strong>
+                        <ul id="lbl-rcpt-manifest-list" style="margin-left:20px; margin-top:8px; font-size:13px; line-height:1.6;"></ul>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="margin-top:25px;" onclick="resetBookingEngineToStart()">Initialize New Booking Request</button>
+            </div>
+
+
+            <div id="view-ticket-lookup" class="panel-section">
+                <h2>Ticket Search &amp; Operations Desk</h2>
+                <p style="color:#718096; font-size:14px; margin-bottom:20px;">Retrieve existing records using the booking ID and primary passenger's last name to process seat swaps, scheduling updates, or full ticket cancellations.</p>
+                
+                <div class="form-grid" style="max-width:600px;">
+                    <div class="form-group"><label>Booking ID (e.g. TN4921):</label><input type="text" id="search-lookup-id" placeholder="XX1111"></div>
+                    <div class="form-group"><label>Primary Adult Last Name:</label><input type="text" id="search-lookup-lastname" placeholder="Smith"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="executeLookupQuerySearch()">Locate Database Record</button>
+
+                <div id="ticket-modifier-actions-container" class="hidden" style="margin-top:35px; border-top:3px solid var(--primary); padding-top:25px;">
+                    <div style="background:#f7fafc; padding:20px; border-radius:6px; margin-bottom:25px; border:1px solid #e2e8f0;">
+                        <h3 style="margin-top:0;">File Summary: <span id="lbl-mod-file-id" style="color:var(--primary);"></span></h3>
+                        <p style="margin-top:5px; font-size:14px;"><strong>Itinerary Tracks:</strong> <span id="lbl-mod-file-route"></span></p>
+                        <p style="font-size:14px;"><strong>Current Seats:</strong> <span id="lbl-mod-file-seats" style="color:var(--primary); font-weight:700;"></span></p>
+                        <p style="font-size:14px;"><strong>Total Value Paid:</strong> AED <span id="lbl-mod-file-cost" style="font-weight:700;"></span></p>
+                    </div>
+
+                    <div style="background:#fff; border:1px solid #e2e8f0; padding:20px; border-radius:6px; margin-bottom:25px;">
+                        <h3 style="margin-top:0; color:var(--primary);">✈️ Operation 1: Seat Assignment Swap Desk</h3>
+                        <p style="font-size:13px; color:#718096; margin-bottom:15px;">Switch cabin seat coordinates directly. Changes into premium extra legroom rows will show calculated fee balances due before processing confirmation.</p>
+                        
+                        <div class="btn-group" style="margin-bottom:20px;">
+                            <button class="btn btn-secondary" onclick="triggerSeatSwapInterfaceLoad()">Initialize Cabin Seat Map Swap</button>
+                        </div>
+
+                        <div id="seat-swap-interactive-sub-panel" class="hidden">
+                            <div id="lbl-swap-seat-counter" style="font-weight:700; margin-bottom:15px; color:var(--primary);">Selected Change Coordinates: 0 / 0</div>
+                            <div class="cabin-deck-container" style="margin-bottom:20px;">
+                                <div id="canvas-airplane-seat-swap-layout"></div>
+                            </div>
+                            <div id="box-seat-swap-pricing-preview" class="cash-alert-banner hidden" style="margin:15px 0;">
+                                <p id="lbl-seat-swap-breakdown-msg" style="font-weight:700; font-size:15px;"></p>
+                            </div>
+                            <button class="btn btn-success" onclick="executeLiveSeatSwapCommit()">Confirm &amp; Commit Seat Swap</button>
+                        </div>
+                    </div>
+
+                    <div style="background:#fff; border:1px solid #e2e8f0; padding:20px; border-radius:6px; margin-bottom:25px;">
+                        <h3 style="margin-top:0; color:var(--primary);">🔄 Operation 2: Schedule &amp; Route Modification Workspace</h3>
+                        <p style="font-size:13px; color:#718096; margin-bottom:15px;">Update flight dates or modify network routing configurations. The system calculates differences based on the selected fare rules before processing.</p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>New Departure Airport:</label>
+                                <select id="mod-input-from" onchange="validateHubRule('mod-input-from')"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>New Destination Airport:</label>
+                                <select id="mod-input-to" onchange="validateHubRule('mod-input-to')"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>New Outbound Flight Date:</label>
+                                <input type="date" id="mod-input-date-out">
+                            </div>
+                            <div class="form-group">
+                                <label>New Inbound Flight Date:</label>
+                                <input type="date" id="mod-input-date-in">
+                            </div>
+                        </div>
+
+                        <div id="box-modification-fee-preview" class="cash-alert-banner hidden">
+                            <h4 style="margin-top:0; font-weight:700;">📋 Verified Modification Ledger Balances Due</h4>
+                            <p id="lbl-mod-fee-breakdown-text" style="font-size:15px; font-weight:700; margin-top:5px;"></p>
+                            <button class="btn btn-success" style="margin-top:15px;" id="btn-confirm-mod-execution" onclick="executeLiveItineraryModificationCommit()">Acknowledge Fee &amp; Update Record</button>
+                        </div>
+
+                        <button class="btn btn-primary" id="btn-calc-mod-trigger" onclick="calculateItineraryModificationFeesPreview()">Verify Route Update Adjustments</button>
+                    </div>
+
+                    <div style="background:#fffbfb; border:1px solid #fed7d7; padding:20px; border-radius:6px;">
+                        <h3 style="margin-top:0; color:#c53030;">❌ Operation 3: Void Ticket / File Cancellation</h3>
+                        <p style="font-size:13px; color:#9b2c2c; margin-bottom:15px;">Voiding the ticket removes the record from the active manifest and adjusts corporate revenues. The refund amount is calculated automatically according to the ticket's fare class penalties.</p>
+                        
+                        <div id="box-cancellation-fee-preview" class="cash-alert-banner hidden" style="background:#fff5f5; border-left-color:#e53e3e; color:#c53030;">
+                            <h4 style="margin-top:0; font-weight:700;">📋 Verified Void Ledger Penalties</h4>
+                            <p id="lbl-cancel-fee-breakdown-text" style="font-size:15px; font-weight:700; margin-top:5px;"></p>
+                            <button class="btn btn-danger" style="margin-top:15px;" id="btn-confirm-cancel-execution" onclick="executeLiveCancellationVoidCommit()">Confirm Ticket Cancellation &amp; Cash Payout</button>
+                        </div>
+
+                        <button class="btn btn-danger" id="btn-calc-cancel-trigger" onclick="calculateCancellationFeesPreview()">Verify Cancellation Penalties</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="view-manager-dash" class="panel-section">
+                <h2>Global Corporate Financial Ledger Logs</h2>
+                <div class="metrics-bar">
+                    <div class="metric-card">
+                        <h4>Gross Office Revenue Yield</h4>
+                        <p id="dash-lbl-revenue">AED 0.00</p>
+                    </div>
+                    <div class="metric-card gold">
+                        <h4>Economy Seat Segment Metrics</h4>
+                        <p id="dash-lbl-eco-count">0 sales</p>
+                    </div>
+                    <div class="metric-card gold">
+                        <h4>Business Seat Segment Metrics</h4>
+                        <p id="dash-lbl-biz-count">0 sales</p>
+                    </div>
+                </div>
+
+                <h3>System Parameters Configuration Matrix</h3>
+                <div style="background:#f7fafc; padding:20px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:30px;">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Economy Saver Mod/Cancel Fee (AED):</label>
-                            <input type="number" id="cfg-eco-fee" value="200" onchange="saveConfigValues()">
+                            <label>E-Saver Mod/Cancel Change Fee (AED):</label>
+                            <input type="number" id="cfg-fee-esaver" value="200" onchange="syncGlobalManagerConfigParameters()">
                         </div>
                         <div class="form-group">
-                            <label>Business Base Premium (% higher than Eco):</label>
-                            <input type="number" id="cfg-biz-prem" value="150" onchange="saveConfigValues()">
+                            <label>Business Class Premium Markup (%):</label>
+                            <input type="number" id="cfg-pct-business" value="150" onchange="syncGlobalManagerConfigParameters()">
                         </div>
                         <div class="form-group">
-                            <label>Economy Flex Premium (% margin):</label>
-                            <input type="number" id="cfg-eflex-prem" value="35" onchange="saveConfigValues()">
+                            <label>Economy Flex Tier Premium (%):</label>
+                            <input type="number" id="cfg-pct-eflex" value="35" onchange="syncGlobalManagerConfigParameters()">
                         </div>
                         <div class="form-group">
-                            <label>Business Flex Premium (% margin):</label>
-                            <input type="number" id="cfg-bflex-prem" value="40" onchange="saveConfigValues()">
+                            <label>Business Flex Tier Premium (%):</label>
+                            <input type="number" id="cfg-pct-bflex" value="40" onchange="syncGlobalManagerConfigParameters()">
                         </div>
                         <div class="form-group">
-                            <label>Row 1 & Exit Row Extra Legroom Charge (AED):</label>
-                            <input type="number" id="cfg-legroom-fee" value="150" onchange="saveConfigValues()">
+                            <label>Extra Legroom Row Charge (AED):</label>
+                            <input type="number" id="cfg-fee-legroom" value="150" onchange="syncGlobalManagerConfigParameters()">
                         </div>
                     </div>
                 </div>
 
-                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
-                    <h3>Staff and Employee Account Provisions</h3>
-                    <table id="staff-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Role</th>
-                                <th>Passcode</th>
-                                <th>Account Status</th>
-                                <th>Action Panel Commands</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <h4>Provision New Staff Account</h4>
-                    <div class="form-grid" style="margin-top:10px;">
-                        <input type="text" id="new-staff-user" placeholder="Username">
-                        <input type="text" id="new-staff-pass" placeholder="Passcode">
-                        <select id="new-staff-role">
-                            <option value="Employee">Employee</option>
-                            <option value="Manager">Manager</option>
-                        </select>
-                        <button class="btn btn-success" onclick="addNewStaffAccount()">Create Account</button>
-                    </div>
-                </div>
-
-                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
-                    <h3>Active System Promo Validation Coupons</h3>
-                    <table id="promo-table">
-                        <thead>
-                            <tr>
-                                <th>Promo Code String</th>
-                                <th>Discount Percentage (%)</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <h4>Add New Promotional Code</h4>
-                    <div class="form-grid" style="margin-top:10px;">
-                        <input type="text" id="new-promo-name" placeholder="PROMO20">
-                        <input type="number" id="new-promo-pct" min="0" max="100" placeholder="20">
-                        <button class="btn btn-success" onclick="addNewPromoCode()">Authorize Promo</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Master System Manifest List Viewable by both roles -->
-            <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px;">
-                <h3>Master Booking Log Database</h3>
+                <h3>Master Reservation File Ledger Log</h3>
                 <div style="overflow-x:auto;">
-                    <table id="master-bookings-table">
+                    <table id="table-master-bookings-log">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Route Track</th>
-                                <th>Primary Adult</th>
-                                <th>Seats</th>
-                                <th>Class Fare</th>
-                                <th>Collected Net</th>
-                                <th>Special Notes</th>
+                                <th>Booking ID</th>
+                                <th>Route Segment</th>
+                                <th>Cabin Fare</th>
+                                <th>Total Gross Cost</th>
+                                <th>Primary Passenger</th>
+                                <th>Assigned Seats</th>
+                                <th>Special Audit Markers</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
+            <div id="view-manager-staff" class="panel-section">
+                <h2>Staff Profiling &amp; Desk Controls</h2>
+                <p style="color:#718096; font-size:14px; margin-bottom:20px;">Review, add, suspend, or terminate desktop user access controls for station employees below.</p>
+                
+                <table id="table-staff-profiles">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role Clearence</th>
+                            <th>Active Passcode</th>
+                            <th>Profile Status</th>
+                            <th>Desk Directives Action Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 style="margin-top:30px;">Provision New Desktop Account</h3>
+                <div class="form-grid" style="margin-top:10px;">
+                    <div class="form-group"><label>New Account Username:</label><input type="text" id="new-user-name" placeholder="agent02"></div>
+                    <div class="form-group"><label>Station Passcode:</label><input type="text" id="new-user-pass" placeholder="9999"></div>
+                    <div class="form-group">
+                        <label>Assigned Authorization Role:</label>
+                        <select id="new-user-role">
+                            <option value="Employee">Desk Employee</option>
+                            <option value="Manager">Office Manager</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="executeNewUserProvision()">Deploy Desk Account</button>
+            </div>
+
+            <div id="view-manager-promos" class="panel-section">
+                <h2>Active Promotional Adjustments Coupons</h2>
+                <p style="color:#718096; font-size:14px; margin-bottom:20px;">Manage verification coupons applied to calculations on the desk booking screens.</p>
+                
+                <table id="table-promo-registry">
+                    <thead>
+                        <tr>
+                            <th>Coupon Code String</th>
+                            <th>Deduction Percentage Metric</th>
+                            <th>Actions Panel</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 style="margin-top:30px;">Authorize Corporate Discount Code</h3>
+                <div class="form-grid" style="max-width: 500px;">
+                    <div class="form-group"><label>Promo Code String:</label><input type="text" id="new-promo-code" placeholder="WINTER15"></div>
+                    <div class="form-group"><label>Deduction Percentage (%):</label><input type="number" id="new-promo-pct" min="0" max="100" placeholder="15"></div>
+                </div>
+                <button class="btn btn-primary" onclick="executeNewPromoProvision()">Register Promo Code</button>
+            </div>
+
+        </div>
     </div>
 
-    <!-- Core Javascript Data Arrays and Logic Engine -->
     <script>
-        // Database Matrices & Initial Setup Mock Dataset
-        const emiratesAirports = [
+        // Database Matrices & Destination Pricing Parameters Models
+        const emiratesDestinationMatrix = [
             { code: "DXB", name: "Dubai (DXB)", basePrice: 0 },
             { code: "LHR", name: "London Heathrow (LHR)", basePrice: 2200 },
             { code: "JFK", name: "New York (JFK)", basePrice: 4500 },
             { code: "BKK", name: "Bangkok (BKK)", basePrice: 1800 },
-            { code: "CDG", name: "Paris Charles de Gaulle (CDG)", basePrice: 2400 },
+            { code: "CDG", name: "Paris (CDG)", basePrice: 2400 },
             { code: "SYD", name: "Sydney (SYD)", basePrice: 5200 },
-            { code: "BOM", name: "Mumbai (BOM)", basePrice: 9500 },
+            { code: "BOM", name: "Mumbai (BOM)", basePrice: 1100 },
             { code: "CAI", name: "Cairo (CAI)", basePrice: 1300 }
         ];
 
-        let state = {
-            staffAccounts: [
+        let databaseState = {
+            staffProfiles: [
                 { user: "admin", pass: "1234", role: "Manager", status: "Active" },
                 { user: "agent01", pass: "5678", role: "Employee", status: "Active" }
             ],
@@ -442,580 +539,788 @@
                 { name: "WELCOME10", pct: 10 }
             ],
             config: {
-                ecoSaverCancelFee: 200,
-                bizPremiumPct: 150, 
-                eFlexPremiumPct: 35,
-                bFlexPremiumPct: 40,
-                extraLegroomFee: 150
+                esaverPenaltyFee: 200,
+                businessMarkupPct: 150, 
+                eflexPremiumPct: 35,
+                bflexPremiumPct: 40,
+                premiumLegroomFee: 150
             },
             bookings: [],
             revenue: 0,
             countEco: 0,
             countBiz: 0,
-            currentUser: null,
-            isManagerPrivilegeBooking: false
+            activeUserAccountProfile: null
         };
 
-        // Temporary Operational Active Booking Transaction Block Object 
-        let currentTx = {};
+        // Transaction Data State Buckets Object Contexts
+        let bookingTxWorkspace = {};
+        let activeLookupFilePointer = null;
 
-        // Application Initialization Lifecycle
         window.onload = function() {
-            populateAirportDropdowns();
-            renderPromoTable();
-            renderStaffTable();
-            renderMasterBookingTable();
-            updateDashboardCounters();
+            populateDestinationSelectOptions();
+            refreshManagerUIProfilesTable();
+            refreshManagerUIPromosTable();
+            refreshMasterLedgerBookingsTable();
+            updateGlobalFinancialCounters();
         };
 
-        function populateAirportDropdowns() {
-            const dropdowns = ['search-from', 'search-to', 'mod-from', 'mod-to'];
-            dropdowns.forEach(id => {
-                const select = document.getElementById(id);
-                select.innerHTML = '';
-                emiratesAirports.forEach(ap => {
+        function populateDestinationSelectOptions() {
+            const boxes = ['flight-from', 'flight-to', 'mod-input-from', 'mod-input-to'];
+            boxes.forEach(boxId => {
+                const el = document.getElementById(boxId);
+                el.innerHTML = '';
+                emiratesDestinationMatrix.forEach(dest => {
                     let opt = document.createElement('option');
-                    opt.value = ap.code;
-                    opt.innerText = ap.name;
-                    select.appendChild(opt);
+                    opt.value = dest.code;
+                    opt.innerText = dest.name;
+                    el.appendChild(opt);
                 });
             });
-            // Default setup for strict DXB hub configurations ruleset
-            document.getElementById('search-from').value = 'DXB';
-            document.getElementById('search-to').value = 'LHR';
+            document.getElementById('flight-from').value = 'DXB';
+            document.getElementById('flight-to').value = 'LHR';
         }
 
-        // Strict Enforcement Logic: One endpoint must always be the DXB main hub location
-        function handleRouteLock(prefix) {
-            const from = document.getElementById(`search-from`);
-            const to = document.getElementById(`search-to`);
-            if (from.value !== 'DXB' && to.value !== 'DXB') {
-                if (prefix === 'from') to.value = 'DXB';
-                else from.value = 'DXB';
-                alert("Dubai Airways hub configuration rule: All routes must either originate or terminate in Dubai (DXB).");
-            }
-        }
-        
-        function handleModRouteLock(prefix) {
-            const from = document.getElementById(`mod-from`);
-            const to = document.getElementById(`mod-to`);
-            if (from.value !== 'DXB' && to.value !== 'DXB') {
-                if (prefix === 'from') to.value = 'DXB';
-                else from.value = 'DXB';
-                alert("Dubai Airways hub configuration rule: All routes must either originate or terminate in Dubai (DXB).");
+        // Hub Enforcement Ruleset Configuration Logic Matrix
+        function validateHubRule(targetElementId) {
+            const prefix = targetElementId.split('-')[0]; // "flight" or "mod"
+            const fromSelect = document.getElementById(`${prefix}-from` || `${prefix}-input-from`);
+            const toSelect = document.getElementById(`${prefix}-to` || `${prefix}-input-to`);
+            
+            let fromVal = fromSelect ? fromSelect.value : document.getElementById('mod-input-from').value;
+            let toVal = toSelect ? toSelect.value : document.getElementById('mod-input-to').value;
+
+            if (fromVal !== 'DXB' && toVal !== 'DXB') {
+                if (targetElementId.includes('from')) {
+                    if(document.getElementById(`${prefix}-to`)) document.getElementById(`${prefix}-to`).value = 'DXB';
+                    else document.getElementById('mod-input-to').value = 'DXB';
+                } else {
+                    if(document.getElementById(`${prefix}-from`)) document.getElementById(`${prefix}-from`).value = 'DXB';
+                    else document.getElementById('mod-input-from').value = 'DXB';
+                }
+                alert("Dubai Airways Operations Notification: Non-route violation detected. Flights must either originate or terminate at the DXB main hub.");
             }
         }
 
         function changeView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        // Portal Views UI Toggler Layout Controls
-        function togglePortalView() {
-            const btn = document.getElementById('portal-toggle-btn');
-            if (btn.innerText === "Staff Portal Login") {
-                changeView('view-login');
-            } else if (btn.innerText === "Back to Passenger Booking Engine") {
-                btn.innerText = "Staff Portal Login";
-                document.getElementById('free-ticket-container').style.display = 'none';
-                state.isManagerPrivilegeBooking = false;
-                changeView('view-search');
-            } else {
-                changeView('view-dashboard');
-            }
-        }
-
-        /* Authentication and Verification Methods */
-        function processLogin() {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-passcode').value;
-            const account = state.staffAccounts.find(a => a.user === u && a.pass === p);
             
-            if (!account) {
-                alert("Authentication Failed. Invalid User Identity or Security Passcode Match.");
-                return;
-            }
-            if (account.status === "Suspended") {
-                alert("Authentication Rejected. This operational user profile has been suspended.");
-                return;
-            }
+            // Sync side nav states highlight colors UI markers
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+            if(viewId === 'view-gate-auth') document.getElementById('nav-btn-login').classList.add('active');
+            if(viewId.includes('booking')) document.getElementById('nav-btn-search').classList.add('active');
+            if(viewId === 'view-ticket-lookup') document.getElementById('nav-btn-lookup').classList.add('active');
+            if(viewId === 'view-manager-dash') document.getElementById('nav-btn-dash').classList.add('active');
+            if(viewId === 'view-manager-staff') document.getElementById('nav-btn-staff').classList.add('active');
+            if(viewId === 'view-manager-promos') document.getElementById('nav-btn-promo').classList.add('active');
+        }
 
-            state.currentUser = account;
-            document.getElementById('portal-toggle-btn').innerText = "Back to Passenger Booking Engine";
-            document.getElementById('welcome-user-tag').innerText = `Active User: ${account.user} (${account.role})`;
+        function switchTab(viewId) {
+            changeView(viewId);
+        }
 
-            if (account.role === "Manager") {
-                document.getElementById('manager-only-controls').style.display = 'block';
-                document.getElementById('free-ticket-container').style.display = 'block';
-                state.isManagerPrivilegeBooking = true;
+        /* ACCESS SECURITY GATE VERIFICATIONS CONTROLLERS */
+        function executePortalLogin() {
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            
+            const profile = databaseState.staffProfiles.find(s => s.user === u && s.pass === p);
+            
+            if(!profile) return alert("Security access denined. Incorrect user credentials profile configuration parameters.");
+            if(profile.status === "Suspended") return alert("Security Access Denied: This account profile has been locked by administration.");
+
+            databaseState.activeUserAccountProfile = profile;
+            
+            // Adjust System Access Matrix Layout Visibility
+            document.getElementById('active-session-label').innerText = `${profile.user} [${profile.role}]`;
+            document.getElementById('menu-group-employee').classList.remove('hidden');
+            document.getElementById('auth-active-logout-box').classList.remove('hidden');
+            document.getElementById('auth-logged-msg').innerText = `Active Session: ${profile.user} connected.`;
+
+            if(profile.role === "Manager") {
+                document.getElementById('menu-group-manager').classList.remove('hidden');
+                document.getElementById('manager-privilege-waiver-box').classList.remove('hidden');
             } else {
-                document.getElementById('manager-only-controls').style.display = 'none';
-                document.getElementById('free-ticket-container').style.display = 'none';
-                state.isManagerPrivilegeBooking = false;
+                document.getElementById('menu-group-manager').classList.add('hidden');
+                document.getElementById('manager-privilege-waiver-box').classList.add('hidden');
             }
 
-            changeView('view-dashboard');
+            changeView('view-booking-search');
         }
 
-        function processLogout() {
-            state.currentUser = null;
-            document.getElementById('portal-toggle-btn').innerText = "Staff Portal Login";
-            document.getElementById('free-ticket-container').style.display = 'none';
-            state.isManagerPrivilegeBooking = false;
-            changeView('view-search');
+        function executePortalLogout() {
+            databaseState.activeUserAccountProfile = null;
+            document.getElementById('active-session-label').innerText = "Guest Terminal";
+            document.getElementById('menu-group-employee').classList.add('hidden');
+            document.getElementById('menu-group-manager').classList.add('hidden');
+            document.getElementById('auth-active-logout-box').classList.add('hidden');
+            document.getElementById('manager-privilege-waiver-box').classList.add('hidden');
+            
+            document.getElementById('auth-user').value = '';
+            document.getElementById('auth-pass').value = '';
+            changeView('view-gate-auth');
         }
 
-        /* Business Config Parameter Settings Mutations */
-        function saveConfigValues() {
-            state.config.ecoSaverCancelFee = parseFloat(document.getElementById('cfg-eco-fee').value) || 0;
-            state.config.bizPremiumPct = parseFloat(document.getElementById('cfg-biz-prem').value) || 0;
-            state.config.eFlexPremiumPct = parseFloat(document.getElementById('cfg-eflex-prem').value) || 0;
-            state.config.bFlexPremiumPct = parseFloat(document.getElementById('cfg-bflex-prem').value) || 0;
-            state.config.extraLegroomFee = parseFloat(document.getElementById('cfg-legroom-fee').value) || 0;
+
+        /* NEW BOOKING CALCULATIONS FLOW LOGIC */
+        function executeFlightRouteQuery() {
+            const from = document.getElementById('flight-from').value;
+            const to = document.getElementById('flight-to').value;
+            const adults = parseInt(document.getElementById('qty-adults').value) || 1;
+            const children = parseInt(document.getElementById('qty-children').value) || 0;
+            const outDate = document.getElementById('date-outbound').value;
+            const inDate = document.getElementById('date-inbound').value;
+            const promoRaw = document.getElementById('input-promo').value.trim().toUpperCase();
+
+            if (from === to) return alert("System Exception: Departure and arrival coordinates cannot match.");
+            if (!outDate) return alert("System Exception: Outbound date framework missing parameter inputs.");
+
+            let nonHubCode = (from === 'DXB') ? to : from;
+            let targetRouteObject = emiratesDestinationMatrix.find(d => d.code === nonHubCode);
+            let basePriceMetric = targetRouteObject ? targetRouteObject.basePrice : 1500;
+            
+            let tripMultiplier = inDate ? 2 : 1;
+            let computedBaseEcoUnitAdult = basePriceMetric * tripMultiplier;
+            let computedBaseEcoUnitChild = Math.round(computedBaseEcoUnitAdult * 0.75); // Standard corporate 25% child discount rule
+
+            let promoPct = 0;
+            if(promoRaw) {
+                let validatedObj = databaseState.promos.find(p => p.name === promoRaw);
+                if (validatedObj) promoPct = validatedObj.pct;
+                else alert("System Notification: Unregistered promo code text bypassed.");
+            }
+
+            let waiverText = document.getElementById('txt-waiver-reason').value.trim();
+            let isWaiverActive = (databaseState.activeUserAccountProfile.role === "Manager" && waiverText !== "");
+
+            // Pre-calculate per adult rate configurations matching specific tier systems adjustments
+            let adultRatesPerUnit = {
+                'E-saver': computedBaseEcoUnitAdult,
+                'E-flex': computedBaseEcoUnitAdult * (1 + (databaseState.config.eflexPremiumPct / 100)),
+                'B-saver': computedBaseEcoUnitAdult * (1 + (databaseState.config.businessMarkupPct / 100)),
+                'B-flex': (computedBaseEcoUnitAdult * (1 + (databaseState.config.businessMarkupPct / 100))) * (1 + (databaseState.config.bflexPremiumPct / 100))
+            };
+
+            let childRatesPerUnit = {
+                'E-saver': computedBaseEcoUnitChild,
+                'E-flex': computedBaseEcoUnitChild * (1 + (databaseState.config.eflexPremiumPct / 100)),
+                'B-saver': computedBaseEcoUnitChild * (1 + (databaseState.config.businessMarkupPct / 100)),
+                'B-flex': (computedBaseEcoUnitChild * (1 + (databaseState.config.businessMarkupPct / 100))) * (1 + (databaseState.config.bflexPremiumPct / 100))
+            };
+
+            // Apply promotional cuts down directly to values unit structures levels if validated
+            if (promoPct > 0) {
+                let discFactor = (100 - promoPct) / 100;
+                for (let key in adultRatesPerUnit) { adultRatesPerUnit[key] = Math.round(adultRatesPerUnit[key] * discFactor); }
+                for (let key in childRatesPerUnit) { childRatesPerUnit[key] = Math.round(childRatesPerUnit[key] * discFactor); }
+            }
+
+            if(isWaiverActive) {
+                for (let key in adultRatesPerUnit) { adultRatesPerUnit[key] = 0; childRatesPerUnit[key] = 0; }
+            }
+
+            // Export to temporary transaction workspace reference pointer state
+            bookingTxWorkspace = {
+                from, to, adults, children, totalPaxCount: (adults + children), outDate, inDate,
+                adultPricesMatrix: adultRatesPerUnit,
+                childPricesMatrix: childRatesPerUnit,
+                isWaiverActive, waiverText,
+                selectedFareTier: null, selectedSeats: [], premiumSeatSurchargesSum: 0
+            };
+
+            // Update DOM pricing labels views elements to represent changes
+            document.getElementById('lbl-p-esaver').innerHTML = `AED ${adultRatesPerUnit['E-saver']} <span class="per-adult-subtext">per adult</span>`;
+            document.getElementById('lbl-p-eflex').innerHTML = `AED ${adultRatesPerUnit['E-flex']} <span class="per-adult-subtext">per adult</span>`;
+            document.getElementById('lbl-p-bsaver').innerHTML = `AED ${adultRatesPerUnit['B-saver']} <span class="per-adult-subtext">per adult</span>`;
+            document.getElementById('lbl-p-bflex').innerHTML = `AED ${adultRatesPerUnit['B-flex']} <span class="per-adult-subtext">per adult</span>`;
+
+            document.getElementById('fare-calc-itinerary-header').innerText = `Itinerary Segment: ${from} to ${to} | Departure: ${outDate} ${inDate ? '| Return: ' + inDate : '| One-Way'} | Count Matrix: ${adults} Adults, ${children} Children`;
+
+            changeView('view-booking-fares');
         }
 
-        function addNewStaffAccount() {
-            const u = document.getElementById('new-staff-user').value.trim();
-            const p = document.getElementById('new-staff-pass').value.trim();
-            const r = document.getElementById('new-staff-role').value;
-            if(!u || !p) return alert("Fill parameters accurately.");
-            state.staffAccounts.push({ user:u, pass:p, role:r, status:"Active" });
-            renderStaffTable();
-            document.getElementById('new-staff-user').value = '';
-            document.getElementById('new-staff-pass').value = '';
+        function selectFareTier(tier) {
+            bookingTxWorkspace.selectedFareTier = tier;
+            document.querySelectorAll('.fare-tier-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`tier-${tier}`).classList.add('selected');
         }
 
-        function setStaffStatus(idx, status) {
-            state.staffAccounts[idx].status = status;
-            renderStaffTable();
+        function proceedToSeatSelectionView() {
+            if(!bookingTxWorkspace.selectedFareTier) return alert("System prompt: Please select a valid service fare cabin category.");
+            
+            const layoutContainer = document.getElementById('canvas-airplane-seat-layout');
+            layoutContainer.innerHTML = '';
+            bookingTxWorkspace.selectedSeats = [];
+            bookingTxWorkspace.premiumSeatSurchargesSum = 0;
+            updateSeatSelectionLabelsCounter('lbl-seat-allotment-counter', bookingTxWorkspace);
+
+            let isBusinessCabin = bookingTxWorkspace.selectedFareTier.startsWith('B');
+
+            if(isBusinessCabin) {
+                // Business Class Configuration Map Matrix Layout (1-2-1 Config over 5 Rows)
+                for(let r=1; r<=5; r++) {
+                    let rowNode = document.createElement('div'); rowNode.className = "deck-row";
+                    rowNode.appendChild(createLabelRowIndex(r));
+                    rowNode.appendChild(createSeatCellNode(r+'A', true, false, 'booking'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'B', true, false, 'booking'));
+                    rowNode.appendChild(createSeatCellNode(r+'C', true, false, 'booking'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'D', true, false, 'booking'));
+                    layoutContainer.appendChild(rowNode);
+                }
+            } else {
+                // Economy Class Configuration Map Matrix Layout (3-3 Config over 30 Rows)
+                for(let r=1; r<=30; r++) {
+                    let rowNode = document.createElement('div'); rowNode.className = "deck-row";
+                    rowNode.appendChild(createLabelRowIndex(r));
+                    let isExtraLegroom = (r === 1 || r === 11 || r === 12);
+                    rowNode.appendChild(createSeatCellNode(r+'A', false, isExtraLegroom, 'booking'));
+                    rowNode.appendChild(createSeatCellNode(r+'B', false, isExtraLegroom, 'booking'));
+                    rowNode.appendChild(createSeatCellNode(r+'C', false, isExtraLegroom, 'booking'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'D', false, isExtraLegroom, 'booking'));
+                    rowNode.appendChild(createSeatCellNode(r+'E', false, isExtraLegroom, 'booking'));
+                    rowNode.appendChild(createSeatCellNode(r+'F', false, isExtraLegroom, 'booking'));
+                    layoutContainer.appendChild(rowNode);
+                }
+            }
+            changeView('view-booking-seats');
         }
 
-        function deleteStaffAccount(idx) {
-            state.staffAccounts.splice(idx, 1);
-            renderStaffTable();
+        function createLabelRowIndex(n) {
+            let d = document.createElement('div'); d.className="row-index"; d.innerText = n; return d;
+        }
+        function createAisleGapNode() {
+            let d = document.createElement('div'); d.className="aisle-gap"; return d;
         }
 
-        function addNewPromoCode() {
-            const n = document.getElementById('new-promo-name').value.trim().toUpperCase();
+        function createSeatCellNode(id, isBiz, isLegroom, mode) {
+            let s = document.createElement('div');
+            s.className = `seat-unit ${isBiz ? 'business-deck' : ''} ${isLegroom ? 'premium-legroom' : ''}`;
+            s.innerText = id;
+
+            let targetFrom = (mode === 'booking') ? bookingTxWorkspace.from : activeLookupFilePointer.from;
+            let targetOutDate = (mode === 'booking') ? bookingTxWorkspace.outDate : activeLookupFilePointer.outDate;
+
+            let isOccupied = databaseState.bookings.some(b => b.from === targetFrom && b.outDate === targetOutDate && b.seats.includes(id));
+            if(isOccupied) {
+                s.classList.add('booked-out');
+            } else {
+                if(mode === 'booking') {
+                    s.onclick = () => toggleSeatSelectionProcess(s, id, isLegroom);
+                } else {
+                    s.onclick = () => toggleSeatSwapSelectionProcess(s, id, isLegroom);
+                }
+            }
+            return s;
+        }
+
+        function toggleSeatSelectionProcess(el, id, isLegroom) {
+            if (el.classList.contains('selected')) {
+                el.classList.remove('selected');
+                bookingTxWorkspace.selectedSeats = bookingTxWorkspace.selectedSeats.filter(s => s !== id);
+                if(isLegroom && !bookingTxWorkspace.isWaiverActive) bookingTxWorkspace.premiumSeatSurchargesSum -= databaseState.config.premiumLegroomFee;
+            } else {
+                if(bookingTxWorkspace.selectedSeats.length >= bookingTxWorkspace.totalPaxCount) {
+                    alert(`System exception notice: Passenger limit count constraints maxed out at ${bookingTxWorkspace.totalPaxCount} allocations.`);
+                    return;
+                }
+                el.classList.add('selected');
+                bookingTxWorkspace.selectedSeats.push(id);
+                if(isLegroom && !bookingTxWorkspace.isWaiverActive) bookingTxWorkspace.premiumSeatSurchargesSum += databaseState.config.premiumLegroomFee;
+            }
+            updateSeatSelectionLabelsCounter('lbl-seat-allotment-counter', bookingTxWorkspace);
+        }
+
+        function updateSeatSelectionLabelsCounter(labelId, txObj) {
+            document.getElementById(labelId).innerText = `Seats Allocated Selection Count: ${txObj.selectedSeats.length} / ${txObj.totalPaxCount}`;
+        }
+
+        /* DYNAMIC CONFIRMATION MANIFEST REGISTRY ENROLLMENT VIEW GENERATION */
+        function proceedToPassengerManifestView() {
+            if(bookingTxWorkspace.selectedSeats.length !== bookingTxWorkspace.totalPaxCount) {
+                return alert("System requirements mismatch: Assign specific physical cabin seat grids coordinates to all cataloged travelers.");
+            }
+
+            const wrapper = document.getElementById('passenger-manifest-input-container');
+            wrapper.innerHTML = '';
+
+            // Generate dedicated passenger entry form controls cards fields dynamically
+            for(let i = 1; i <= bookingTxWorkspace.totalPaxCount; i++) {
+                let typeText = (i <= bookingTxWorkspace.adults) ? "Adult Profile Ticket" : "Child Profile Ticket";
+                let seatAssignedValue = bookingTxWorkspace.selectedSeats[i - 1];
+
+                let card = document.createElement('div');
+                card.className = "passenger-info-block";
+                card.innerHTML = `
+                    <h4>Traveler Entry #${i} (${typeText}) — Assigned Seat Workspace Location: [${seatAssignedValue}]</h4>
+                    <div class="form-grid">
+                        <div class="form-group"><label>First Given Name:</label><input type="text" class="manifest-f-name" required placeholder="John"></div>
+                        <div class="form-group"><label>Official Surname (Last Name):</label><input type="text" class="manifest-l-name" required placeholder="Smith"></div>
+                        <div class="form-group"><label>Date of Birth (DOB):</label><input type="date" class="manifest-dob" required></div>
+                    </div>
+                `;
+                wrapper.appendChild(card);
+            }
+            changeView('view-booking-manifest');
+        }
+
+        function executeFinalItineraryCommit() {
+            const fNames = document.querySelectorAll('.manifest-f-name');
+            const lNames = document.querySelectorAll('.manifest-l-name');
+            const dobs = document.querySelectorAll('.manifest-dob');
+
+            let manifestRegistryArray = [];
+            let isValid = true;
+
+            for(let i=0; i<fNames.length; i++) {
+                if(!fNames[i].value.trim() || !lNames[i].value.trim() || !dobs[i].value) {
+                    isValid = false; break;
+                }
+                manifestRegistryArray.push({
+                    firstName: fNames[i].value.trim(),
+                    lastName: lNames[i].value.trim(),
+                    dob: dobs[i].value,
+                    seat: bookingTxWorkspace.selectedSeats[i],
+                    type: (i < bookingTxWorkspace.adults) ? 'Adult' : 'Child'
+                });
+            }
+
+            if(!isValid) return alert("System prompt: Please input required identification fields parameters for all travelers.");
+
+            // Generate Unique Sequence Serial Match Constraints Structure Pattern Mapping XX1111
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const numbers = "0123456789";
+            let generatedBookingID = letters[Math.floor(Math.random()*26)] + letters[Math.floor(Math.random()*26)]
+                                   + numbers[Math.floor(Math.random()*10)] + numbers[Math.floor(Math.random()*10)]
+                                   + numbers[Math.floor(Math.random()*10)] + numbers[Math.floor(Math.random()*10)];
+
+            // Final Calculations: Sum core pricing rows arrays vectors elements values dynamically
+            let totalBaseFareCostSum = (bookingTxWorkspace.adults * bookingTxWorkspace.adultPricesMatrix[bookingTxWorkspace.selectedFareTier]) +
+                                      (bookingTxWorkspace.children * bookingTxWorkspace.childPricesMatrix[bookingTxWorkspace.selectedFareTier]);
+            
+            let combinedFinalGrossInvoicePrice = totalBaseFareCostSum + bookingTxWorkspace.premiumSeatSurchargesSum;
+
+            let masterItineraryLogRecord = {
+                id: generatedBookingID,
+                from: bookingTxWorkspace.from,
+                to: bookingTxWorkspace.to,
+                adults: bookingTxWorkspace.adults,
+                children: bookingTxWorkspace.children,
+                totalPaxCount: bookingTxWorkspace.totalPaxCount,
+                outDate: bookingTxWorkspace.outDate,
+                inDate: bookingTxWorkspace.inDate,
+                fareTier: bookingTxWorkspace.selectedFareTier,
+                seats: bookingTxWorkspace.selectedSeats,
+                totalCost: combinedFinalGrossInvoicePrice,
+                primaryPassengerLastName: manifestRegistryArray[0].lastName,
+                manifest: manifestRegistryArray,
+                isFree: bookingTxWorkspace.isWaiverActive,
+                freeReasonText: bookingTxWorkspace.waiverText
+            };
+
+            // Commit System Mutations Data Blocks to Storage Log Model arrays instances
+            databaseState.bookings.push(masterItineraryLogRecord);
+            databaseState.revenue += combinedFinalGrossInvoicePrice;
+            
+            if(bookingTxWorkspace.selectedFareTier.startsWith('B')) databaseState.countBiz += bookingTxWorkspace.totalPaxCount;
+            else databaseState.countEco += bookingTxWorkspace.totalPaxCount;
+
+            // Paint data records fields indicators to receipts invoice screen panel fields dynamically
+            document.getElementById('lbl-cash-collection-prompt-msg').innerText = `COLLECT EXACTLY AED ${combinedFinalGrossInvoicePrice.toFixed(2)} CASH`;
+            document.getElementById('lbl-rcpt-id').innerText = generatedBookingID;
+            document.getElementById('lbl-rcpt-route').innerText = `${masterItineraryLogRecord.from} ➔ ${masterItineraryLogRecord.to}`;
+            document.getElementById('lbl-rcpt-tier').innerText = masterItineraryLogRecord.fareTier;
+            document.getElementById('lbl-rcpt-seats').innerText = masterItineraryLogRecord.seats.join(', ');
+
+            const ul = document.getElementById('lbl-rcpt-manifest-list');
+            ul.innerHTML = '';
+            masterItineraryLogRecord.manifest.forEach(p => {
+                let li = document.createElement('li');
+                li.innerHTML = `👤 <strong>${p.lastName.toUpperCase()}, ${p.firstName}</strong> (${p.type}) — DOB: ${p.dob} | Allocated Seat Assignment: [${p.seat}]`;
+                ul.appendChild(li);
+            });
+
+            // Update Global Dash Tables States
+            updateGlobalFinancialCounters();
+            refreshMasterLedgerBookingsTable();
+            changeView('view-booking-receipt-invoice');
+        }
+
+        function resetBookingEngineToStart() {
+            document.getElementById('input-promo').value = '';
+            document.getElementById('txt-waiver-reason').value = '';
+            document.getElementById('qty-adults').value = '1';
+            document.getElementById('qty-children').value = '0';
+            changeView('view-booking-search');
+        }
+
+
+        /* ================= MANAGEMENT / TICKET CHANGES ACTIONS DESK LOGIC ================= */
+        function executeLookupQuerySearch() {
+            let id = document.getElementById('search-lookup-id').value.trim().toUpperCase();
+            let name = document.getElementById('search-lookup-lastname').value.trim().toLowerCase();
+
+            let targetFile = databaseState.bookings.find(b => b.id === id && b.primaryPassengerLastName.toLowerCase() === name);
+            if(!targetFile) return alert("Database Exception Lookup: No active master file matches those record tokens parameters inside current files logs.");
+
+            activeLookupFilePointer = targetFile;
+
+            // Show active file dashboard container details metrics maps
+            document.getElementById('lbl-mod-file-id').innerText = targetFile.id;
+            document.getElementById('lbl-mod-file-route').innerText = `${targetFile.from} ➔ ${targetFile.to} | Departure Outbound: ${targetFile.outDate} ${targetFile.inDate ? '| Return Inbound: ' + targetFile.inDate : '| One-Way'} [Tier: ${targetFile.fareTier}]`;
+            document.getElementById('lbl-mod-file-seats').innerText = targetFile.seats.join(', ');
+            document.getElementById('lbl-mod-file-cost').innerText = targetFile.totalCost.toFixed(2);
+
+            // Seed updates parameters boxes fields values
+            document.getElementById('mod-input-from').value = targetFile.from;
+            document.getElementById('mod-input-to').value = targetFile.to;
+            document.getElementById('mod-input-date-out').value = targetFile.outDate;
+            document.getElementById('mod-input-date-in').value = targetFile.inDate || "";
+
+            // Hide pre-calculated boxes state alerts views until refreshed manually later
+            document.getElementById('seat-swap-interactive-sub-panel').classList.add('hidden');
+            document.getElementById('box-seat-swap-pricing-preview').classList.add('hidden');
+            document.getElementById('box-modification-fee-preview').classList.add('hidden');
+            document.getElementById('box-cancellation-fee-preview').classList.add('hidden');
+
+            document.getElementById('ticket-modifier-actions-container').classList.remove('hidden');
+        }
+
+        // Subaction 1 Logic Block Tracker: Seat Assignment Coordinate Swaps Controls
+        let seatSwapTxWorkspace = { selectedSeats: [], extraLegroomChargeAccumulator: 0 };
+
+        function triggerSeatSwapInterfaceLoad() {
+            const canvas = document.getElementById('canvas-airplane-seat-swap-layout');
+            canvas.innerHTML = '';
+            
+            seatSwapTxWorkspace.selectedSeats = [];
+            seatSwapTxWorkspace.extraLegroomChargeAccumulator = 0;
+            seatSwapTxWorkspace.totalPaxCount = activeLookupFilePointer.totalPaxCount;
+
+            document.getElementById('lbl-swap-seat-counter').innerText = `Selected Swap Seats: 0 / ${seatSwapTxWorkspace.totalPaxCount}`;
+            document.getElementById('seat-swap-interactive-sub-panel').classList.remove('hidden');
+
+            let isBiz = activeLookupFilePointer.fareTier.startsWith('B');
+            
+            if(isBiz) {
+                for(let r=1; r<=5; r++) {
+                    let rowNode = document.createElement('div'); rowNode.className = "deck-row";
+                    rowNode.appendChild(createLabelRowIndex(r));
+                    rowNode.appendChild(createSeatCellNode(r+'A', true, false, 'swap'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'B', true, false, 'swap'));
+                    rowNode.appendChild(createSeatCellNode(r+'C', true, false, 'swap'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'D', true, false, 'swap'));
+                    canvas.appendChild(rowNode);
+                }
+            } else {
+                for(let r=1; r<=30; r++) {
+                    let rowNode = document.createElement('div'); rowNode.className = "deck-row";
+                    rowNode.appendChild(createLabelRowIndex(r));
+                    let isExtraLegroom = (r === 1 || r === 11 || r === 12);
+                    rowNode.appendChild(createSeatCellNode(r+'A', false, isExtraLegroom, 'swap'));
+                    rowNode.appendChild(createSeatCellNode(r+'B', false, isExtraLegroom, 'swap'));
+                    rowNode.appendChild(createSeatCellNode(r+'C', false, isExtraLegroom, 'swap'));
+                    rowNode.appendChild(createAisleGapNode());
+                    rowNode.appendChild(createSeatCellNode(r+'D', false, isExtraLegroom, 'swap'));
+                    rowNode.appendChild(createSeatCellNode(r+'E', false, isExtraLegroom, 'swap'));
+                    rowNode.appendChild(createSeatCellNode(r+'F', false, isExtraLegroom, 'swap'));
+                    canvas.appendChild(rowNode);
+                }
+            }
+        }
+
+        function toggleSeatSwapSelectionProcess(el, id, isLegroom) {
+            if (el.classList.contains('selected')) {
+                el.classList.remove('selected');
+                seatSwapTxWorkspace.selectedSeats = seatSwapTxWorkspace.selectedSeats.filter(s => s !== id);
+                if(isLegroom && !activeLookupFilePointer.isFree) seatSwapTxWorkspace.extraLegroomChargeAccumulator -= databaseState.config.premiumLegroomFee;
+            } else {
+                if(seatSwapTxWorkspace.selectedSeats.length >= seatSwapTxWorkspace.totalPaxCount) {
+                    alert(`Seat assignment mapping constraint reached.`); return;
+                }
+                el.classList.add('selected');
+                seatSwapTxWorkspace.selectedSeats.push(id);
+                if(isLegroom && !activeLookupFilePointer.isFree) seatSwapTxWorkspace.extraLegroomChargeAccumulator += databaseState.config.premiumLegroomFee;
+            }
+
+            document.getElementById('lbl-swap-seat-counter').innerText = `Selected Swap Seats: ${seatSwapTxWorkspace.selectedSeats.length} / ${seatSwapTxWorkspace.totalPaxCount}`;
+            
+            // Check dynamic layout pricing balances preview values changes triggers
+            let cashTargetSwapVal = seatSwapTxWorkspace.extraLegroomChargeAccumulator;
+            if (cashTargetSwapVal < 0) cashTargetSwapVal = 0; 
+
+            document.getElementById('lbl-seat-swap-breakdown-msg').innerText = `VERIFIED CASH BALANCE TO COLLECT FOR SEAT SWAP: AED ${cashTargetSwapVal.toFixed(2)} CASH`;
+            document.getElementById('box-seat-swap-pricing-preview').classList.remove('hidden');
+        }
+
+        function executeLiveSeatSwapCommit() {
+            if(seatSwapTxWorkspace.selectedSeats.length !== activeLookupFilePointer.totalPaxCount) {
+                return alert("System Error: You must fill alternate coordinates layouts locations grids maps fields matches for all passengers.");
+            }
+
+            let collectCash = seatSwapTxWorkspace.extraLegroomChargeAccumulator; if(collectCash < 0) collectCash = 0;
+
+            if(!confirm(`Acknowledge physical counter cash register validation audit trail collection check of AED ${collectCash} before locking seat maps updates changes?`)) return;
+
+            // Commit Data Array Element Attribute Alterations Mutator
+            activeLookupFilePointer.seats = [...seatSwapTxWorkspace.selectedSeats];
+            activeLookupFilePointer.totalCost += collectCash;
+            databaseState.revenue += collectCash;
+
+            alert("System Success: Cabin seat configuration swap logs locked inside corporate operational manifests.");
+            updateGlobalFinancialCounters();
+            refreshMasterLedgerBookingsTable();
+            executeLookupQuerySearch(); // Reload view specs
+        }
+
+
+        // Subaction 2 Logic Block Tracker: Schedule Modifiers and Calculations Adjustments Panel
+        function calculateItineraryModificationFeesPreview() {
+            const nFrom = document.getElementById('mod-input-from').value;
+            const nTo = document.getElementById('mod-input-to').value;
+            const nOut = document.getElementById('mod-input-date-out').value;
+            const nIn = document.getElementById('mod-input-date-in').value;
+
+            if(nFrom === nTo) return alert("System error mismatch rule coordinates constraint match values conflict.");
+            if(!nOut) return alert("Outbound date parameters values missing configuration metrics indices.");
+
+            // Calculate base penalty modifiers criteria match values references
+            let structuralAdminPenaltyFee = 0;
+            if(activeLookupFilePointer.fareTier === 'E-saver' && !activeLookupFilePointer.isFree) {
+                structuralAdminPenaltyFee = databaseState.config.esaverPenaltyFee;
+            }
+
+            // Recalculate dynamic route delta configurations changes vectors elements pricing maps references
+            let nonHubCode = (nFrom === 'DXB') ? nTo : nFrom;
+            let targetRouteObject = emiratesDestinationMatrix.find(d => d.code === nonHubCode);
+            let basePriceMetric = targetRouteObject ? targetRouteObject.basePrice : 1500;
+            let tripMultiplier = nIn ? 2 : 1;
+
+            let revisedBaseEcoUnitAdult = basePriceMetric * tripMultiplier;
+            let revisedBaseEcoUnitChild = Math.round(revisedBaseEcoUnitAdult * 0.75);
+
+            let tierMultiplierFactor = 1;
+            if(activeLookupFilePointer.fareTier === 'E-flex') tierMultiplierFactor = (1 + (databaseState.config.eflexPremiumPct / 100));
+            if(activeLookupFilePointer.fareTier === 'B-saver') tierMultiplierFactor = (1 + (databaseState.config.businessMarkupPct / 100));
+            if(activeLookupFilePointer.fareTier === 'B-flex') tierMultiplierFactor = (1 + (databaseState.config.businessMarkupPct / 100)) * (1 + (databaseState.config.bflexPremiumPct / 100));
+
+            let finalAdultUnitCalculatedCost = revisedBaseEcoUnitAdult * tierMultiplierFactor;
+            let finalChildUnitCalculatedCost = revisedBaseEcoUnitChild * tierMultiplierFactor;
+
+            let overallCalculatedNewBaseFareCostsSum = (activeLookupFilePointer.adults * finalAdultUnitCalculatedCost) + (activeLookupFilePointer.children * finalChildUnitCalculatedCost);
+            if(activeLookupFilePointer.isFree) overallCalculatedNewBaseFareCostsSum = 0;
+
+            // Pull previous track profile values criteria minus seat premium values metrics indicators offsets updates
+            let previousBaseFareComponentCostValue = activeLookupFilePointer.totalCost; // Simplified fallback baseline comparison index matrix tracking
+
+            let pricingRouteDeltaVarianceGapVal = overallCalculatedNewBaseFareCostsSum - previousBaseFareComponentCostValue;
+            if (pricingRouteDeltaVarianceGapVal < 0) pricingRouteDeltaVarianceGapVal = 0; 
+
+            let totalCombinedCashCollectionTargetValueBalance = structuralAdminPenaltyFee + pricingRouteDeltaVarianceGapVal;
+
+            document.getElementById('lbl-mod-fee-breakdown-text').innerHTML = `
+                • Service Tier Change Administration Fee Penalty: <strong>AED ${structuralAdminPenaltyFee}</strong><br>
+                • Route Schedule Segment Real-world Variance Gap Diff: <strong>AED ${pricingRouteDeltaVarianceGapVal.toFixed(2)}</strong><br><br>
+                💵 TOTAL OVER-THE-COUNTER CASH BALANCE TO COLLECT: <strong style="font-size:18px; color:var(--primary);">AED ${totalCombinedCashCollectionTargetValueBalance.toFixed(2)} CASH</strong>
+            `;
+
+            // Cache temporary calculation attributes on button targets actions models references
+            document.getElementById('btn-confirm-mod-execution').setAttribute('data-penalty', structuralAdminPenaltyFee);
+            document.getElementById('btn-confirm-mod-execution').setAttribute('data-delta', pricingRouteDeltaVarianceGapVal);
+            document.getElementById('btn-confirm-mod-execution').setAttribute('data-newtotal', (activeLookupFilePointer.totalCost + pricingRouteDeltaVarianceGapVal));
+
+            document.getElementById('box-modification-fee-preview').classList.remove('hidden');
+        }
+
+        function executeLiveItineraryModificationCommit() {
+            let penal = parseFloat(document.getElementById('btn-confirm-mod-execution').getAttribute('data-penalty')) || 0;
+            let delta = parseFloat(document.getElementById('btn-confirm-mod-execution').getAttribute('data-delta')) || 0;
+            let newTotalCostValue = parseFloat(document.getElementById('btn-confirm-mod-execution').getAttribute('data-newtotal')) || 0;
+
+            let combinedCashToCollectVal = penal + delta;
+
+            if(!confirm(`Verify payment receipt verification token: Confirm desktop drawer cash log entry update receipt of AED ${combinedCashToCollectVal.toFixed(2)} before locking track variations changes?`)) return;
+
+            // Apply mutations values attributes pointers modifications indices keys metrics matches changes
+            activeLookupFilePointer.from = document.getElementById('mod-input-from').value;
+            activeLookupFilePointer.to = document.getElementById('mod-input-to').value;
+            activeLookupFilePointer.outDate = document.getElementById('mod-input-date-out').value;
+            activeLookupFilePointer.inDate = document.getElementById('mod-input-date-in').value;
+            activeLookupFilePointer.totalCost = newTotalCostValue;
+
+            databaseState.revenue += combinedCashToCollectVal;
+
+            alert("System Confirmation Notice: Ticket records schedules updates modifications successfully synchronized safely.");
+            updateGlobalFinancialCounters();
+            refreshMasterLedgerBookingsTable();
+            executeLookupQuerySearch();
+        }
+
+
+        // Subaction 3 Logic Block Tracker: Ticket Void Cancel Calculations Previews
+        function calculateCancellationFeesPreview() {
+            let structuralAdminPenaltyFee = 0;
+            if(activeLookupFilePointer.fareTier === 'E-saver' && !activeLookupFilePointer.isFree) {
+                structuralAdminPenaltyFee = databaseState.config.esaverPenaltyFee;
+            }
+
+            let physicalCashRefundPayoutVolumeValue = activeLookupFilePointer.totalCost - structuralAdminPenaltyFee;
+            if (physicalCashRefundPayoutVolumeValue < 0) physicalCashRefundPayoutVolumeValue = 0;
+
+            document.getElementById('lbl-cancel-fee-breakdown-text').innerHTML = `
+                • Ticket Class Cancellation Administration Forfeiture Penalty: <strong>AED ${structuralAdminPenaltyFee}</strong><br>
+                • Total Gross Value Originally Settled Collected Invoice: <strong>AED ${activeLookupFilePointer.totalCost.toFixed(2)}</strong><br><br>
+                💰 TOTAL LIQUID CASH REFUND DISBURSEMENT PAYOUT TO PASSENGER: <strong style="font-size:18px; color:var(--success);">AED ${physicalCashRefundPayoutVolumeValue.toFixed(2)} CASH</strong>
+            `;
+
+            document.getElementById('btn-confirm-cancel-execution').setAttribute('data-refund', physicalCashRefundPayoutVolumeValue);
+            document.getElementById('box-cancellation-fee-preview').classList.remove('hidden');
+        }
+
+        function executeLiveCancellationVoidCommit() {
+            let liquidRefundPayoutVolumeAmount = parseFloat(document.getElementById('btn-confirm-cancel-execution').getAttribute('data-refund')) || 0;
+
+            if(!confirm(`CRITICAL SECURITY ACTION WARNING: Disburse exactly AED ${liquidRefundPayoutVolumeAmount.toFixed(2)} physical cash refund balance out from office registration terminal drawer layout counter now?`)) return;
+
+            // Adjust Ledger Analytics Corporate Accounting Records
+            databaseState.revenue -= liquidRefundPayoutVolumeAmount;
+            
+            let totalPassCountVolume = activeLookupFilePointer.adults + activeLookupFilePointer.children;
+            if(activeLookupFilePointer.fareTier.startsWith('B')) databaseState.countBiz -= totalPassCountVolume;
+            else databaseState.countEco -= totalPassCountVolume;
+
+            // Purge file registration data mutation vector map slice match keys references pointers
+            databaseState.bookings = databaseState.bookings.filter(b => b.id !== activeLookupFilePointer.id);
+
+            alert(`System Complete: File reference token record ${activeLookupFilePointer.id} successfully voided out from active flight manifests safely.`);
+            
+            activeLookupFilePointer = null;
+            document.getElementById('ticket-modifier-actions-container').classList.add('hidden');
+            
+            updateGlobalFinancialCounters();
+            refreshMasterLedgerBookingsTable();
+        }
+
+
+
+        /* ================= ADMINISTRATIVE PRIVILEGED BUSINESS CONFIG PANEL MUTATORS ================= */
+        function syncGlobalManagerConfigParameters() {
+            databaseState.config.esaverPenaltyFee = parseFloat(document.getElementById('cfg-fee-esaver').value) || 0;
+            databaseState.config.businessMarkupPct = parseFloat(document.getElementById('cfg-pct-business').value) || 0;
+            databaseState.config.eflexPremiumPct = parseFloat(document.getElementById('cfg-pct-eflex').value) || 0;
+            databaseState.config.bflexPremiumPct = parseFloat(document.getElementById('cfg-pct-bflex').value) || 0;
+            databaseState.config.premiumLegroomFee = parseFloat(document.getElementById('cfg-fee-legroom').value) || 0;
+        }
+
+        function executeNewUserProvision() {
+            const u = document.getElementById('new-user-name').value.trim();
+            const p = document.getElementById('new-user-pass').value.trim();
+            const r = document.getElementById('new-user-role').value;
+            
+            if(!u || !p) return alert("Input configuration variables details accurately.");
+            databaseState.staffProfiles.push({ user: u, pass: p, role: r, status: "Active" });
+            
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-pass').value = '';
+            refreshManagerUIProfilesTable();
+        }
+
+        function alterUserProfileStatusState(idx, statusStr) {
+            databaseState.staffProfiles[idx].status = statusStr;
+            refreshManagerUIProfilesTable();
+        }
+
+        function executeUserProfileTerminationPurge(idx) {
+            if(confirm("Confirm structural deletion of this office user profile terminal access rights identity?")) {
+                databaseState.staffProfiles.splice(idx, 1);
+                refreshManagerUIProfilesTable();
+            }
+        }
+
+        function executeNewPromoProvision() {
+            const c = document.getElementById('new-promo-code').value.trim().toUpperCase();
             const p = parseFloat(document.getElementById('new-promo-pct').value) || 0;
-            if(!n || p < 0 || p > 100) return alert("Provide valid configuration metrics.");
-            state.promos.push({ name:n, pct:p });
-            renderPromoTable();
-            document.getElementById('new-promo-name').value = '';
+
+            if(!c || p < 0 || p > 100) return alert("System Parameter Rejection: Input valid coupon structures properties.");
+            databaseState.promos.push({ name: c, pct: p });
+
+            document.getElementById('new-promo-code').value = '';
             document.getElementById('new-promo-pct').value = '';
+            refreshManagerUIPromosTable();
         }
 
-        function removePromoCode(idx) {
-            state.promos.splice(idx, 1);
-            renderPromoTable();
+        function executePromoRevocationVoid(idx) {
+            databaseState.promos.splice(idx, 1);
+            refreshManagerUIPromosTable();
         }
 
-        /* Data Renderers UI */
-        function renderStaffTable() {
-            const tbody = document.querySelector('#staff-table tbody');
+
+        /* DYNAMIC DOM CONTENT DATA TABLES WRITERS RENDERING LAYOUT CODES */
+        function refreshManagerUIProfilesTable() {
+            const tbody = document.querySelector('#table-staff-profiles tbody');
             tbody.innerHTML = '';
-            state.staffAccounts.forEach((a, i) => {
-                if(a.user === 'admin') return; // protect default account
+            databaseState.staffProfiles.forEach((profile, i) => {
+                if(profile.user === 'admin') return; 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${a.user}</td>
-                    <td>${a.role}</td>
-                    <td>${a.pass}</td>
-                    <td><span class="badge ${a.status === 'Active' ? 'badge-active' : 'badge-suspended'}">${a.status}</span></td>
+                    <td><strong>${profile.user}</strong></td>
+                    <td>${profile.role}</td>
+                    <td><code>${profile.pass}</code></td>
+                    <td><span class="badge ${profile.status === 'Active' ? 'badge-active' : 'badge-suspended'}">${profile.status}</span></td>
                     <td>
-                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="setStaffStatus(${i}, 'Active')">Activate</button>
-                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="setStaffStatus(${i}, 'Suspended')">Suspend</button>
-                        <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteStaffAccount(${i})">Delete</button>
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="alterUserProfileStatusState(${i}, 'Active')">Activate</button>
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="alterUserProfileStatusState(${i}, 'Suspended')">Suspend</button>
+                        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="executeUserProfileTerminationPurge(${i})">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function renderPromoTable() {
-            const tbody = document.querySelector('#promo-table tbody');
+        function refreshManagerUIPromosTable() {
+            const tbody = document.querySelector('#table-promo-registry tbody');
             tbody.innerHTML = '';
-            state.promos.forEach((p, i) => {
+            databaseState.promos.forEach((promo, i) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${p.name}</td><td>${p.pct}%</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="removePromoCode(${i})">Revoke</button></td>`;
+                tr.innerHTML = `<td><code>${promo.name}</code></td><td><strong>${promo.pct}% off</strong></td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="executePromoRevocationVoid(${i})">Revoke</button></td>`;
                 tbody.appendChild(tr);
             });
         }
 
-        function renderMasterBookingTable() {
-            const tbody = document.querySelector('#master-bookings-table tbody');
+        function refreshMasterLedgerBookingsTable() {
+            const tbody = document.querySelector('#table-master-bookings-log tbody');
             tbody.innerHTML = '';
-            state.bookings.forEach((b) => {
+            databaseState.bookings.forEach((b) => {
                 let tr = document.createElement('tr');
                 tr.style.cursor = "pointer";
+                tr.setAttribute('title', 'Click to instantly load this file index directly to active workspaces desks slots...');
                 tr.onclick = () => {
-                    document.getElementById('retrieve-id').value = b.id;
-                    document.getElementById('retrieve-lastname').value = b.lastName;
-                    retrieveBooking();
+                    document.getElementById('search-lookup-id').value = b.id;
+                    document.getElementById('search-lookup-lastname').value = b.primaryPassengerLastName;
+                    switchTab('view-ticket-lookup');
+                    executeLookupQuerySearch();
                 };
                 tr.innerHTML = `
-                    <td><strong style="color:var(--primary);">${b.id}</strong></td>
-                    <td>${b.from} ➔ ${b.to} ${b.inboundDate ? '🔄' : '➡️'}</td>
-                    <td>${b.lastName}</td>
-                    <td>${b.seats.join(', ')}</td>
-                    <td><span class="badge badge-active" style="background:#e3f2fd; color:#0d47a1;">${b.fareTier}</span></td>
-                    <td>AED ${b.totalCost}</td>
-                    <td><small>${b.isFree ? '⭐ Free Ticket: ' + b.freeReason : 'Standard Paid Collection'}</small></td>
+                    <td><strong style="color:var(--primary); font-family:monospace; font-size:15px;">${b.id}</strong></td>
+                    <td><strong>${b.from} ➔ ${b.to}</strong> <small style="color:#718096; display:block;">Out: ${b.outDate}</small></td>
+                    <td><span class="badge badge-active" style="background:#e2e8f0; color:#4a5568;">${b.fareTier}</span></td>
+                    <td><strong>AED ${b.totalCost.toFixed(2)}</strong></td>
+                    <td>${b.primaryPassengerLastName.toUpperCase()}</td>
+                    <td><small style="color:var(--primary); font-weight:700;">${b.seats.join(', ')}</small></td>
+                    <td><small style="font-size:11px;">${b.isFree ? '⭐ Waiver Reason: ' + b.freeReasonText : 'Standard Retail Settlement Payout'}</small></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function updateDashboardCounters() {
-            document.getElementById('dash-earnings').innerText = `AED ${state.revenue.toFixed(2)}`;
-            document.getElementById('dash-count-eco').innerText = state.countEco;
-            document.getElementById('dash-count-biz').innerText = state.countBiz;
-        }
-
-
-        /* CORE ENGINE TRANSACTION SYSTEM LOGIC FLOWS */
-        
-        function processSearch() {
-            const from = document.getElementById('search-from').value;
-            const to = document.getElementById('search-to').value;
-            const adults = parseInt(document.getElementById('search-adults').value) || 1;
-            const children = parseInt(document.getElementById('search-children').value) || 0;
-            const outboundDate = document.getElementById('search-outbound').value;
-            const inboundDate = document.getElementById('search-inbound').value;
-            const promoStr = document.getElementById('search-promo').value.trim().toUpperCase();
-            
-            if(from === to) return alert("Origin & Destination stations matching conflict.");
-            if(!outboundDate) return alert("Select target departure date framework.");
-
-            let nonHubCode = from === 'DXB' ? to : from;
-            let targetAirportInfo = emiratesAirports.find(a => a.code === nonHubCode);
-            let basePriceCalculated = targetAirportInfo ? targetAirportInfo.basePrice : 1500;
-
-            // Compute Base Flight Matrix Core Variables 
-            let totalPassengers = adults + children;
-            let tripMultiplier = inboundDate ? 2 : 1; 
-            let calculatedBaseFareEco = basePriceCalculated * tripMultiplier;
-
-            let discPct = 0;
-            if(promoStr) {
-                let validPromo = state.promos.find(p => p.name === promoStr);
-                if (validPromo) discPct = validPromo.pct;
-                else alert("Invalid promotional application voucher entered.");
-            }
-
-            // Populate global tx state parameters variables matrix
-            currentTx = {
-                from, to, adults, children, totalPassengers, outboundDate, inboundDate, discPct,
-                baseEcoPrice: calculatedBaseFareEco,
-                isFree: (state.isManagerPrivilegeBooking && document.getElementById('free-ticket-reason').value.trim() !== ""),
-                freeReason: document.getElementById('free-ticket-reason').value.trim(),
-                fareTier: null, seatCharges: 0, finalPrice: 0, selectedSeats: []
-            };
-
-            // Calculate exact fare tier matrix representations
-            let ecoSaverUnit = currentTx.baseEcoPrice;
-            let ecoFlexUnit = ecoSaverUnit * (1 + (state.config.eFlexPremiumPct / 100));
-            let bizSaverUnit = ecoSaverUnit * (1 + (state.config.bizPremiumPct / 100));
-            let bizFlexUnit = bizSaverUnit * (1 + (state.config.bFlexPremiumPct / 100));
-
-            // Apply promotional cuts down directly to total value unit levels if valid
-            if (discPct > 0) {
-                let multiplier = (100 - discPct) / 100;
-                ecoSaverUnit *= multiplier; ecoFlexUnit *= multiplier; bizSaverUnit *= multiplier; bizFlexUnit *= multiplier;
-            }
-
-            // Set final pricing vectors globally inside state instance
-            currentTx.computedPrices = {
-                'E-saver': Math.round(ecoSaverUnit * totalPassengers),
-                'E-flex': Math.round(ecoFlexUnit * totalPassengers),
-                'B-saver': Math.round(bizSaverUnit * totalPassengers),
-                'B-flex': Math.round(bizFlexUnit * totalPassengers)
-            };
-
-            if(currentTx.isFree) {
-                for (let k in currentTx.computedPrices) currentTx.computedPrices[k] = 0;
-            }
-
-            // Display values inside views container boxes logic mappings
-            document.getElementById('fare-flight-summary').innerText = `${from} ➔ ${to} | ${outboundDate} ${inboundDate ? 'until ' + inboundDate : '(One-Way)'} | ${totalPassengers} Passenger(s)`;
-            document.getElementById('price-E-saver').innerText = `AED ${currentTx.computedPrices['E-saver']}`;
-            document.getElementById('price-E-flex').innerText = `AED ${currentTx.computedPrices['E-flex']}`;
-            document.getElementById('price-B-saver').innerText = `AED ${currentTx.computedPrices['B-saver']}`;
-            document.getElementById('price-B-flex').innerText = `AED ${currentTx.computedPrices['B-flex']}`;
-
-            changeView('view-fares');
-        }
-
-        function selectFare(tier) {
-            currentTx.fareTier = tier;
-            document.querySelectorAll('.fare-card').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`fare-${tier}`).classList.add('selected');
-        }
-
-        function proceedToSeats() {
-            if(!currentTx.fareTier) return alert("Select a preferred airfare operational tier variant.");
-            
-            // Build out Seat Assignment Dynamic Matrix map interface dynamically
-            const container = document.getElementById('dynamic-seat-map');
-            container.innerHTML = '';
-            currentTx.selectedSeats = [];
-            updateSeatCounter();
-
-            let isBusiness = currentTx.fareTier.startsWith('B');
-
-            if(isBusiness) {
-                // Business Class Configuration Map Model Matrix Layout (1-2-1 Config over 5 Rows)
-                for(let r=1; r<=5; r++) {
-                    let rowDiv = document.createElement('div');
-                    rowDiv.className = "seat-row";
-                    rowDiv.appendChild(createLabelNum(r));
-                    
-                    rowDiv.appendChild(createSeatNode(r+'A', true));
-                    rowDiv.appendChild(createAisleSpace());
-                    rowDiv.appendChild(createSeatNode(r+'B', true));
-                    rowDiv.appendChild(createSeatNode(r+'C', true));
-                    rowDiv.appendChild(createAisleSpace());
-                    rowDiv.appendChild(createSeatNode(r+'D', true));
-
-                    container.appendChild(rowDiv);
-                }
-            } else {
-                // Economy Class Configuration Map Model Matrix Layout (3-3 Config over 30 Rows)
-                for(let r=1; r<=30; r++) {
-                    let rowDiv = document.createElement('div');
-                    rowDiv.className = "seat-row";
-                    rowDiv.appendChild(createLabelNum(r));
-
-                    // Extra legroom classifications mapping rows criteria matches
-                    let isLegroom = (r === 1 || r === 11 || r === 12);
-
-                    rowDiv.appendChild(createSeatNode(r+'A', false, isLegroom));
-                    rowDiv.appendChild(createSeatNode(r+'B', false, isLegroom));
-                    rowDiv.appendChild(createSeatNode(r+'C', false, isLegroom));
-                    rowDiv.appendChild(createAisleSpace());
-                    rowDiv.appendChild(createSeatNode(r+'D', false, isLegroom));
-                    rowDiv.appendChild(createSeatNode(r+'E', false, isLegroom));
-                    rowDiv.appendChild(createSeatNode(r+'F', false, isLegroom));
-
-                    container.appendChild(rowDiv);
-                }
-            }
-            changeView('view-seats');
-        }
-
-        function createLabelNum(num) {
-            let d = document.createElement('div'); d.className="row-num"; d.innerText = num; return d;
-        }
-        function createAisleSpace() {
-            let d = document.createElement('div'); d.className="aisle"; return d;
-        }
-
-        function createSeatNode(id, isBiz, isLegroom) {
-            let s = document.createElement('div');
-            s.className = `seat ${isBiz ? 'business' : ''} ${isLegroom ? 'extra-legroom' : ''}`;
-            s.innerText = id;
-
-            // Mock check matching whether seats are pre-occupied or allocated already dynamically
-            let isOccupied = state.bookings.some(b => b.from === currentTx.from && b.outboundDate === currentTx.outboundDate && b.seats.includes(id));
-            if(isOccupied) {
-                s.classList.add('occupied');
-            } else {
-                s.onclick = () => toggleSeatSelection(s, id, isLegroom);
-            }
-            return s;
-        }
-
-        function toggleSeatSelection(element, id, isLegroom) {
-            if (element.classList.contains('selected')) {
-                element.classList.remove('selected');
-                currentTx.selectedSeats = currentTx.selectedSeats.filter(s => s !== id);
-                if(isLegroom && !currentTx.isFree) currentTx.seatCharges -= state.config.extraLegroomFee;
-            } else {
-                if (currentTx.selectedSeats.length >= currentTx.totalPassengers) {
-                    alert(`All ${currentTx.totalPassengers} ticket seat allocations have already been mapped.`);
-                    return;
-                }
-                element.classList.add('selected');
-                currentTx.selectedSeats.push(id);
-                if(isLegroom && !currentTx.isFree) currentTx.seatCharges += state.config.extraLegroomFee;
-            }
-            updateSeatCounter();
-        }
-
-        function updateSeatCounter() {
-            document.getElementById('seat-selection-counter').innerText = `Seats Allocated Selection Count: ${currentTx.selectedSeats.length} / ${currentTx.totalPassengers}`;
-        }
-
-        function finalizeBooking() {
-            if(currentTx.selectedSeats.length !== currentTx.totalPassengers) {
-                return alert("Complete seat mappings logic requirements for all travelers before tracking confirmation.");
-            }
-
-            // Create Unique Random Generated AlphaNumeric ID Sequence matching constraints matching signature XX1111
-            const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const nums = "0123456789";
-            let randID = alpha[Math.floor(Math.random()*26)] + alpha[Math.floor(Math.random()*26)]
-                       + nums[Math.floor(Math.random()*10)] + nums[Math.floor(Math.random()*10)]
-                       + nums[Math.floor(Math.random()*10)] + nums[Math.floor(Math.random()*10)];
-
-            let totalDue = currentTx.computedPrices[currentTx.fareTier] + currentTx.seatCharges;
-            let lastNameInput = prompt("Enter Primary Adult Last Name (Passenger profile index lookup key):");
-            if (!lastNameInput) lastNameInput = "Passenger";
-
-            let finalRecord = {
-                id: randID,
-                from: currentTx.from,
-                to: currentTx.to,
-                adults: currentTx.adults,
-                children: currentTx.children,
-                outboundDate: currentTx.outboundDate,
-                inboundDate: currentTx.inboundDate,
-                fareTier: currentTx.fareTier,
-                seats: currentTx.selectedSeats,
-                totalCost: totalDue,
-                lastName: lastNameInput.trim(),
-                isFree: currentTx.isFree,
-                freeReason: currentTx.freeReason
-            };
-
-            // Commit System Mutations Data Transactions
-            state.bookings.push(finalRecord);
-            state.revenue += totalDue;
-            if(currentTx.fareTier.startsWith('B')) state.countBiz += currentTx.totalPassengers;
-            else state.countEco += currentTx.totalPassengers;
-
-            // Prompt user tracking counters details layout presentation data matrix
-            document.getElementById('cash-prompt-msg').innerText = `COLLECT AED ${totalDue.toFixed(2)} CASH IMMEDIATELY AT STATION COUNTER`;
-            document.getElementById('conf-id').innerText = randID;
-            document.getElementById('conf-route').innerText = `${finalRecord.from} to ${finalRecord.to}`;
-            document.getElementById('conf-passengers').innerText = `${finalRecord.lastName} (+ ${currentTx.totalPassengers - 1} others)`;
-            document.getElementById('conf-fare').innerText = finalRecord.fareTier;
-            document.getElementById('conf-seats').innerText = finalRecord.seats.join(', ');
-
-            // Refresh dashboards tracking values
-            updateDashboardCounters();
-            renderMasterBookingTable();
-            
-            changeView('view-confirmation');
-        }
-
-        function resetToSearch() {
-            // clear dynamic values references
-            document.getElementById('search-promo').value = '';
-            document.getElementById('free-ticket-reason').value = '';
-            changeView('view-search');
-        }
-
-
-        /* MUTATION RECORDS / CHANGES / CANCELLATIONS FLIGHT OPERATIONS DATA CONTROLLERS */
-        let activeModRecord = null;
-
-        function retrieveBooking() {
-            let lookupId = document.getElementById('retrieve-id').value.trim().toUpperCase();
-            let lookupName = document.getElementById('retrieve-lastname').value.trim();
-
-            let matchedBooking = state.bookings.find(b => b.id === lookupId && b.lastName.toLowerCase() === lookupName.toLowerCase());
-            if(!matchedBooking) return alert("No matching active booking discovered inside database logs.");
-
-            activeModRecord = matchedBooking;
-
-            document.getElementById('mod-summary-id').innerText = matchedBooking.id;
-            document.getElementById('mod-summary-route').innerText = `${matchedBooking.from} ➔ ${matchedBooking.to} (Fare: ${matchedBooking.fareTier}) [Seats: ${matchedBooking.seats.join(', ')}]`;
-            document.getElementById('mod-summary-paid').innerText = matchedBooking.totalCost;
-            
-            document.getElementById('mod-from').value = matchedBooking.from;
-            document.getElementById('mod-to').value = matchedBooking.to;
-            document.getElementById('mod-date-out').value = matchedBooking.outboundDate;
-            document.getElementById('mod-date-in').value = matchedBooking.inboundDate || "";
-
-            changeView('view-modify-ticket');
-        }
-
-        function executeCancellation() {
-            if(!activeModRecord) return;
-            if(!confirm("Confirm irreversible physical cancellation sequence for this system reservation?")) return;
-
-            let penalFee = 0;
-            if(activeModRecord.fareTier === 'E-saver' && !activeModRecord.isFree) {
-                penalFee = state.config.ecoSaverCancelFee;
-            }
-
-            let calculatedRefundPayout = activeModRecord.totalCost - penalFee;
-            if(calculatedRefundPayout < 0) calculatedRefundPayout = 0;
-
-            // Adjust Ledger Analytics Accounting Records 
-            state.revenue -= calculatedRefundPayout;
-            let countTotal = activeModRecord.adults + activeModRecord.children;
-            if(activeModRecord.fareTier.startsWith('B')) state.countBiz -= countTotal;
-            else state.countEco -= countTotal;
-
-            // Splice data mutations vector reference
-            state.bookings = state.bookings.filter(b => b.id !== activeModRecord.id);
-
-            alert(`Reservation cancelled successfully.\n\n💵 Cash Penalty Retained: AED ${penalFee}\n💰 Cash Refund Paid Out to Customer: AED ${calculatedRefundPayout}`);
-            
-            updateDashboardCounters();
-            renderMasterBookingTable();
-            resetToSearch();
-        }
-
-        function calculateModificationFee() {
-            if(!activeModRecord) return;
-            
-            const nFrom = document.getElementById('mod-from').value;
-            const nTo = document.getElementById('mod-to').value;
-            const nOut = document.getElementById('mod-date-out').value;
-            const nIn = document.getElementById('mod-date-in').value;
-
-            if(nFrom === nTo) return alert("Origin & Destination mismatch conflicts.");
-            if(!nOut) return alert("Invalid date specified parameters.");
-
-            let changeFee = 0;
-            if(activeModRecord.fareTier === 'E-saver' && !activeModRecord.isFree) {
-                changeFee = state.config.ecoSaverCancelFee;
-            }
-
-            // Route Price delta check configurations tracking computation logic block
-            let nonHubCode = nFrom === 'DXB' ? nTo : nFrom;
-            let targetAirportInfo = emiratesAirports.find(a => a.code === nonHubCode);
-            let basePriceCalculated = targetAirportInfo ? targetAirportInfo.basePrice : 1500;
-            let tripMultiplier = nIn ? 2 : 1;
-            let calculatedBaseFareEco = basePriceCalculated * tripMultiplier;
-
-            // Recalculate based on matching level tier structures logic
-            let tierMultiplier = 1;
-            if(activeModRecord.fareTier === 'E-flex') tierMultiplier = (1 + (state.config.eFlexPremiumPct / 100));
-            if(activeModRecord.fareTier === 'B-saver') tierMultiplier = (1 + (state.config.bizPremiumPct / 100));
-            if(activeModRecord.fareTier === 'B-flex') tierMultiplier = (1 + (state.config.bizPremiumPct / 100)) * (1 + (state.config.bFlexPremiumPct / 100));
-
-            let unitCostCalculated = calculatedBaseFareEco * tierMultiplier;
-            let totalPassCount = activeModRecord.adults + activeModRecord.children;
-            let estimatedNewFareCost = Math.round(unitCostCalculated * totalPassCount);
-            
-            if(activeModRecord.isFree) estimatedNewFareCost = 0;
-
-            let priceDifferenceGap = estimatedNewFareCost - (activeModRecord.totalCost - activeModRecord.seats.length * (activeModRecord.seats.includes('1A') || activeModRecord.seats.includes('1B') ? state.config.extraLegroomFee : 0)); // simple gap calculation model tracking
-            if (priceDifferenceGap < 0) priceDifferenceGap = 0; // standard non-residual protection line configuration index rules
-
-            let finalCashToCollect = changeFee + priceDifferenceGap;
-
-            alert(`Modification Cost Recalculation Breakdown:\n\n• Processing Modification Penalty: AED ${changeFee}\n• Route/Date Pricing Difference Gap: AED ${priceDifferenceGap}\n\n💵 TOTAL EXTRA CASH TO COLLECT AT COUNTER: AED ${finalCashToCollect}`);
-
-            // Perform direct data records state updates mutations
-            activeModRecord.from = nFrom;
-            activeModRecord.to = nTo;
-            activeModRecord.outboundDate = nOut;
-            activeModRecord.inboundDate = nIn;
-            activeModRecord.totalCost += priceDifferenceGap; 
-
-            state.revenue += finalCashToCollect;
-
-            updateDashboardCounters();
-            renderMasterBookingTable();
-            alert("Ticket updated and seat configurations locked safely under new scheduling indices parameters.");
-            resetToSearch();
+        function updateGlobalFinancialCounters() {
+            document.getElementById('dash-lbl-revenue').innerText = `AED ${databaseState.revenue.toFixed(2)}`;
+            document.getElementById('dash-lbl-eco-count').innerText = `${databaseState.countEco} segments`;
+            document.getElementById('dash-lbl-biz-count').innerText = `${databaseState.countBiz} segments`;
         }
     </script>
 </body>
