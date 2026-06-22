@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubai Airways - Booking Dashboard</title>
+    <style>
+        :root {
+            --primary: #9e1b32; /* Deep Emirates-style Red */
+            --primary-hover: #7a1425;
+            --gold: #d4af37;
+            --dark: #222;
+            --light: #f8f9fa;
+            --border: #ccc;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background: #f0f2f5; color: var(--dark); padding-bottom: 60px; }
+        
+        /* Header & Logo */
+        header { background: #fff; border-bottom: 4px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; border: 2px solid var(--gold); }
+        .logo-text { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
+        .logo-text span { color: var(--gold); font-weight: 400; }
+        
+        .nav-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .nav-btn:hover { background: var(--primary-hover); }
+
+        /* Container & Grid Setup */
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .view-section { display: none; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .view-section.active { display: block; }
+
+        h2 { margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h3 { margin: 15px 0 10px; color: #444; }
+
+        /* Form Controls */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-weight: 6px; font-size: 14px; color: #555; }
+        select, input { padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 15px; }
+        
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f4f4f4; color: var(--dark); }
+        
+        /* Dashboard Cards */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card.gold-card { border-left-color: var(--gold); }
+        .card h4 { font-size: 14px; text-transform: uppercase; color: #777; margin-bottom: 5px; }
+        .card p { font-size: 24px; font-weight: bold; color: var(--dark); }
+
+        /* Fare Options layout */
+        .fare-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
+        .fare-class-box { background: #fdfdfd; border: 1px solid #e0e0e0; padding: 20px; border-radius: 6px; }
+        .fare-card { border: 2px solid #eee; padding: 15px; margin-top: 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; position: relative; }
+        .fare-card:hover { border-color: var(--primary); background: #fffbfb; }
+        .fare-card.selected { border-color: var(--primary); background: #fff5f6; box-shadow: 0 0 10px rgba(158,27,50,0.1); }
+        .fare-price { position: absolute; right: 15px; top: 15px; font-size: 18px; font-weight: bold; color: var(--primary); }
+
+        /* Seat Grid Mapping */
+        .seat-map-wrapper { display: flex; flex-direction: column; align-items: center; background: #fafafa; padding: 20px; border-radius: 8px; border: 1px dashed #ccc; }
+        .aisle { width: 30px; }
+        .seat-row { display: flex; align-items: center; margin-bottom: 6px; gap: 5px; }
+        .row-num { width: 30px; text-align: center; font-size: 12px; color: #777; font-weight: bold; }
+        .seat { width: 32px; height: 32px; background: #e0e0e0; border: 1px solid #b5b5b5; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; user-select: none; }
+        .seat.business { background: #dcd1f0; border-color: #9b7fd4; width: 45px; }
+        .seat.selected { background: #4caf50 !important; color: white; border-color: #388e3c; }
+        .seat.occupied { background: #e57373 !important; border-color: #d32f2f; cursor: not-allowed; color: white; }
+        .seat.extra-legroom { background: #ffe082; border-color: #ffb300; }
+
+        /* Utility/Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .badge-active { background: #d4edda; color: #155724; }
+        .badge-suspended { background: #fff3cd; color: #856404; }
+        
+        .modal-prompt { background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin: 20px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Brand Logo -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">DUBAI <span>AIRWAYS</span></div>
+        </div>
+        <div>
+            <button class="nav-btn" id="portal-toggle-btn" onclick="togglePortalView()">Staff Portal Login</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ================= BOOKING ENGINE FLOW ================= -->
+        
+        <!-- STEP 1: Route Search -->
+        <div id="view-search" class="view-section active">
+            <h2>Book Your Flight</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>From:</label>
+                    <select id="search-from" onchange="handleRouteLock('from')"></select>
+                </div>
+                <div class="form-group">
+                    <label>To:</label>
+                    <select id="search-to" onchange="handleRouteLock('to')"></select>
+                </div>
+                <div class="form-group">
+                    <label>Adults:</label>
+                    <input type="number" id="search-adults" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Children:</label>
+                    <input type="number" id="search-children" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Outbound Date:</label>
+                    <input type="date" id="search-outbound">
+                </div>
+                <div class="form-group">
+                    <label>Inbound Date (Blank for One-Way):</label>
+                    <input type="date" id="search-inbound">
+                </div>
+                <div class="form-group">
+                    <label>Promo Code:</label>
+                    <input type="text" id="search-promo" placeholder="Optional">
+                </div>
+            </div>
+            
+            <div id="free-ticket-container" style="display:none; background:#fff9db; padding:15px; border-radius:5px; margin-bottom:15px;">
+                <label style="color:#856404; font-weight:bold;">Manager Privilege: Reason for Waiver / Free Ticket</label>
+                <input type="text" id="free-ticket-reason" style="width:100%; margin-top:5px;" placeholder="Enter legal/operational reason here...">
+            </div>
+
+            <button class="btn btn-primary" onclick="processSearch()">Search Flights</button>
+            
+            <div style="margin-top: 40px; background: #fff; padding: 20px; border-radius: 6px; border: 1px solid #ddd;">
+                <h3>Retrieve / Manage Existing Booking</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Booking ID:</label><input type="text" id="retrieve-id" placeholder="XX1111"></div>
+                    <div class="form-group"><label>Last Name (First Adult):</label><input type="text" id="retrieve-lastname"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="retrieveBooking()">Find Booking</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Fare Selection -->
+        <div id="view-fares" class="view-section">
+            <h2>Select Your Fares</h2>
+            <div id="fare-flight-summary" style="margin-bottom: 20px; font-weight: 500;"></div>
+            
+            <div class="fare-container">
+                <!-- Economy options -->
+                <div class="fare-class-box">
+                    <h3>Economy Class</h3>
+                    <div class="fare-card" id="fare-E-saver" onclick="selectFare('E-saver')">
+                        <strong>E-Saver</strong>
+                        <p style="font-size:13px; color:#666; margin-top:5px;">• 20KG Baggage<br>• Complimentary Meal<br>• Refundable/Changeable via rules</p>
+                        <div class="fare-price" id="price-E-saver">AED 0</div>
+                    </div>
+                    <div class="fare-card" id="fare-E-flex" onclick="selectFare('E-flex')">
+                        <strong>E-Flex</strong>
+                        <p style="font-size:13px; color:#666; margin-top:5px;">• 30KG Baggage<br>• Complimentary Meal<br>• Completely Flexible (No Fee)</p>
+                        <div class="fare-price" id="price-E-flex">AED 0</div>
+                    </div>
+                </div>
+
+                <!-- Business options -->
+                <div class="fare-class-box">
+                    <h3>Business Class</h3>
+                    <div class="fare-card" id="fare-B-saver" onclick="selectFare('B-saver')">
+                        <strong>B-Saver</strong>
+                        <p style="font-size:13px; color:#666; margin-top:5px;">• 30KG Baggage<br>• Luxury Dining Meal<br>• Flexible</p>
+                        <div class="fare-price" id="price-B-saver">AED 0</div>
+                    </div>
+                    <div class="fare-card" id="fare-B-flex" onclick="selectFare('B-flex')">
+                        <strong>B-Flex</strong>
+                        <p style="font-size:13px; color:#666; margin-top:5px;">• 40KG Baggage<br>• Luxury Dining & Lounge Access<br>• Completely Flexible</p>
+                        <div class="fare-price" id="price-B-flex">AED 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="changeView('view-search')">Back</button>
+                <button class="btn btn-primary" onclick="proceedToSeats()">Proceed to Seat Selection</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Seat Selection -->
+        <div id="view-seats" class="view-section">
+            <h2>Select Seats (Airbus A320)</h2>
+            <p style="margin-bottom: 15px;">Please select seats for all passengers. Row 1 and Rows 11-12 have Extra Legroom charges applied.</p>
+            <div id="seat-selection-counter" style="font-weight: bold; margin-bottom: 10px; color: var(--primary);"></div>
+            
+            <div class="seat-map-wrapper">
+                <div style="background:#333; color:white; width: 200px; text-align:center; padding:5px; margin-bottom:20px; border-radius:3px;">Flight Deck / Front</div>
+                <div id="dynamic-seat-map"></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="changeView('view-fares')">Back</button>
+                <button class="btn btn-primary" onclick="finalizeBooking()">Confirm & Book Flight</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Confirmation Screen -->
+        <div id="view-confirmation" class="view-section">
+            <h2 style="color: #28a745;">Booking Confirmed Successfully!</h2>
+            <div class="modal-prompt">
+                <h3>💵 ACTION REQUIRED: Counter Cash Collection Prompt</h3>
+                <p id="cash-prompt-msg" style="font-size: 18px; font-weight: bold; margin-top: 10px; color:#155724;"></p>
+            </div>
+
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 6px; margin-top: 20px;">
+                <h3>Ticket Itinerary Details</h3>
+                <p><strong>Booking Reference ID:</strong> <span id="conf-id" style="font-size: 18px; color: var(--primary); font-weight: bold;"></span></p>
+                <p><strong>Route:</strong> <span id="conf-route"></span></p>
+                <p><strong>Passengers:</strong> <span id="conf-passengers"></span></p>
+                <p><strong>Fare Tier Selected:</strong> <span id="conf-fare"></span></p>
+                <p><strong>Assigned Seat(s):</strong> <span id="conf-seats"></span></p>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="resetToSearch()">Create Another Booking</button>
+        </div>
+
+        <!-- STEP 5: Manage / Modify Existing Ticket Screen -->
+        <div id="view-modify-ticket" class="view-section">
+            <h2>Modify or Cancel Reservation</h2>
+            <div style="background:#f9f9f9; padding:15px; border-radius:5px; margin-bottom:20px;">
+                <p><strong>Booking Reference:</strong> <span id="mod-summary-id"></span></p>
+                <p><strong>Current Itinerary:</strong> <span id="mod-summary-route"></span></p>
+                <p><strong>Total Value Paid:</strong> AED <span id="mod-summary-paid"></span></p>
+            </div>
+
+            <h3>Option A: Cancel Itinerary</h3>
+            <p style="font-size:13px; color:#555;">Cancelling returns refundable cash to the customer. Applicable tier cancellation penalities are deducted from the payout and final global dashboard revenues.</p>
+            <button class="btn btn-danger" style="margin-top:5px;" onclick="executeCancellation()">Cancel Booking & Process Refund</button>
+
+            <hr style="margin:25px 0;">
+
+            <h3>Option B: Modify Route & Dates</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>New Route Origin:</label>
+                    <select id="mod-from" onchange="handleModRouteLock('from')"></select>
+                </div>
+                <div class="form-group">
+                    <label>New Route Destination:</label>
+                    <select id="mod-to" onchange="handleModRouteLock('to')"></select>
+                </div>
+                <div class="form-group">
+                    <label>New Outbound Date:</label>
+                    <input type="date" id="mod-date-out">
+                </div>
+                <div class="form-group">
+                    <label>New Return Date (Blank for One-Way):</label>
+                    <input type="date" id="mod-date-in">
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="calculateModificationFee()">Recalculate & Modify Ticket</button>
+
+            <button class="btn btn-secondary" style="margin-top:20px; display:block;" onclick="resetToSearch()">Back to Main Window</button>
+        </div>
+
+
+        <!-- ================= MANAGEMENT & STAFF SYSTEM ================= -->
+        
+        <!-- Login Window Section -->
+        <div id="view-login" class="view-section">
+            <h2>Internal Staff Authentication Portal</h2>
+            <div class="form-grid" style="max-width: 400px;">
+                <div class="form-group">
+                    <label>User Identity / ID Name:</label>
+                    <input type="text" id="login-username" value="admin">
+                </div>
+                <div class="form-group">
+                    <label>Passcode:</label>
+                    <input type="password" id="login-passcode" value="1234">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="processLogin()">Authenticate</button>
+        </div>
+
+        <!-- Main Dashboard Control Panel Layout -->
+        <div id="view-dashboard" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>Administrative Control Panel</h2>
+                <div>
+                    <span id="welcome-user-tag" style="margin-right:15px; font-weight:bold; color:#555;"></span>
+                    <button class="btn btn-secondary" onclick="processLogout()">Sign Out Portal</button>
+                </div>
+            </div>
+
+            <!-- Global Earnings and Counts Counters Matrix -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h4>Total Gross Earnings</h4>
+                    <p id="dash-earnings">AED 0.00</p>
+                </div>
+                <div class="card gold-card">
+                    <h4>Economy Bookings</h4>
+                    <p id="dash-count-eco">0</p>
+                </div>
+                <div class="card gold-card">
+                    <h4>Business Bookings</h4>
+                    <p id="dash-count-biz">0</p>
+                </div>
+            </div>
+
+            <!-- Conditional Display Controls Config Container for managers -->
+            <div id="manager-only-controls" style="display:none;">
+                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
+                    <h3>System Parameter Matrices (Fares, Gaps, Penalties)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Economy Saver Mod/Cancel Fee (AED):</label>
+                            <input type="number" id="cfg-eco-fee" value="200" onchange="saveConfigValues()">
+                        </div>
+                        <div class="form-group">
+                            <label>Business Base Premium (% higher than Eco):</label>
+                            <input type="number" id="cfg-biz-prem" value="150" onchange="saveConfigValues()">
+                        </div>
+                        <div class="form-group">
+                            <label>Economy Flex Premium (% margin):</label>
+                            <input type="number" id="cfg-eflex-prem" value="35" onchange="saveConfigValues()">
+                        </div>
+                        <div class="form-group">
+                            <label>Business Flex Premium (% margin):</label>
+                            <input type="number" id="cfg-bflex-prem" value="40" onchange="saveConfigValues()">
+                        </div>
+                        <div class="form-group">
+                            <label>Row 1 & Exit Row Extra Legroom Charge (AED):</label>
+                            <input type="number" id="cfg-legroom-fee" value="150" onchange="saveConfigValues()">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
+                    <h3>Staff and Employee Account Provisions</h3>
+                    <table id="staff-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Passcode</th>
+                                <th>Account Status</th>
+                                <th>Action Panel Commands</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <h4>Provision New Staff Account</h4>
+                    <div class="form-grid" style="margin-top:10px;">
+                        <input type="text" id="new-staff-user" placeholder="Username">
+                        <input type="text" id="new-staff-pass" placeholder="Passcode">
+                        <select id="new-staff-role">
+                            <option value="Employee">Employee</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                        <button class="btn btn-success" onclick="addNewStaffAccount()">Create Account</button>
+                    </div>
+                </div>
+
+                <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:25px;">
+                    <h3>Active System Promo Validation Coupons</h3>
+                    <table id="promo-table">
+                        <thead>
+                            <tr>
+                                <th>Promo Code String</th>
+                                <th>Discount Percentage (%)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <h4>Add New Promotional Code</h4>
+                    <div class="form-grid" style="margin-top:10px;">
+                        <input type="text" id="new-promo-name" placeholder="PROMO20">
+                        <input type="number" id="new-promo-pct" min="0" max="100" placeholder="20">
+                        <button class="btn btn-success" onclick="addNewPromoCode()">Authorize Promo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master System Manifest List Viewable by both roles -->
+            <div style="background:#fff; border:1px solid #ddd; padding:20px; border-radius:6px;">
+                <h3>Master Booking Log Database</h3>
+                <div style="overflow-x:auto;">
+                    <table id="master-bookings-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Route Track</th>
+                                <th>Primary Adult</th>
+                                <th>Seats</th>
+                                <th>Class Fare</th>
+                                <th>Collected Net</th>
+                                <th>Special Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Core Javascript Data Arrays and Logic Engine -->
+    <script>
+        // Database Matrices & Initial Setup Mock Dataset
+        const emiratesAirports = [
+            { code: "DXB", name: "Dubai (DXB)", basePrice: 0 },
+            { code: "LHR", name: "London Heathrow (LHR)", basePrice: 2200 },
+            { code: "JFK", name: "New York (JFK)", basePrice: 4500 },
+            { code: "BKK", name: "Bangkok (BKK)", basePrice: 1800 },
+            { code: "CDG", name: "Paris Charles de Gaulle (CDG)", basePrice: 2400 },
+            { code: "SYD", name: "Sydney (SYD)", basePrice: 5200 },
+            { code: "BOM", name: "Mumbai (BOM)", basePrice: 9500 },
+            { code: "CAI", name: "Cairo (CAI)", basePrice: 1300 }
+        ];
+
+        let state = {
+            staffAccounts: [
+                { user: "admin", pass: "1234", role: "Manager", status: "Active" },
+                { user: "agent01", pass: "5678", role: "Employee", status: "Active" }
+            ],
+            promos: [
+                { name: "DXB20", pct: 20 },
+                { name: "WELCOME10", pct: 10 }
+            ],
+            config: {
+                ecoSaverCancelFee: 200,
+                bizPremiumPct: 150, 
+                eFlexPremiumPct: 35,
+                bFlexPremiumPct: 40,
+                extraLegroomFee: 150
+            },
+            bookings: [],
+            revenue: 0,
+            countEco: 0,
+            countBiz: 0,
+            currentUser: null,
+            isManagerPrivilegeBooking: false
+        };
+
+        // Temporary Operational Active Booking Transaction Block Object 
+        let currentTx = {};
+
+        // Application Initialization Lifecycle
+        window.onload = function() {
+            populateAirportDropdowns();
+            renderPromoTable();
+            renderStaffTable();
+            renderMasterBookingTable();
+            updateDashboardCounters();
+        };
+
+        function populateAirportDropdowns() {
+            const dropdowns = ['search-from', 'search-to', 'mod-from', 'mod-to'];
+            dropdowns.forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '';
+                emiratesAirports.forEach(ap => {
+                    let opt = document.createElement('option');
+                    opt.value = ap.code;
+                    opt.innerText = ap.name;
+                    select.appendChild(opt);
+                });
+            });
+            // Default setup for strict DXB hub configurations ruleset
+            document.getElementById('search-from').value = 'DXB';
+            document.getElementById('search-to').value = 'LHR';
+        }
+
+        // Strict Enforcement Logic: One endpoint must always be the DXB main hub location
+        function handleRouteLock(prefix) {
+            const from = document.getElementById(`search-from`);
+            const to = document.getElementById(`search-to`);
+            if (from.value !== 'DXB' && to.value !== 'DXB') {
+                if (prefix === 'from') to.value = 'DXB';
+                else from.value = 'DXB';
+                alert("Dubai Airways hub configuration rule: All routes must either originate or terminate in Dubai (DXB).");
+            }
+        }
+        
+        function handleModRouteLock(prefix) {
+            const from = document.getElementById(`mod-from`);
+            const to = document.getElementById(`mod-to`);
+            if (from.value !== 'DXB' && to.value !== 'DXB') {
+                if (prefix === 'from') to.value = 'DXB';
+                else from.value = 'DXB';
+                alert("Dubai Airways hub configuration rule: All routes must either originate or terminate in Dubai (DXB).");
+            }
+        }
+
+        function changeView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // Portal Views UI Toggler Layout Controls
+        function togglePortalView() {
+            const btn = document.getElementById('portal-toggle-btn');
+            if (btn.innerText === "Staff Portal Login") {
+                changeView('view-login');
+            } else if (btn.innerText === "Back to Passenger Booking Engine") {
+                btn.innerText = "Staff Portal Login";
+                document.getElementById('free-ticket-container').style.display = 'none';
+                state.isManagerPrivilegeBooking = false;
+                changeView('view-search');
+            } else {
+                changeView('view-dashboard');
+            }
+        }
+
+        /* Authentication and Verification Methods */
+        function processLogin() {
+            const u = document.getElementById('login-username').value;
+            const p = document.getElementById('login-passcode').value;
+            const account = state.staffAccounts.find(a => a.user === u && a.pass === p);
+            
+            if (!account) {
+                alert("Authentication Failed. Invalid User Identity or Security Passcode Match.");
+                return;
+            }
+            if (account.status === "Suspended") {
+                alert("Authentication Rejected. This operational user profile has been suspended.");
+                return;
+            }
+
+            state.currentUser = account;
+            document.getElementById('portal-toggle-btn').innerText = "Back to Passenger Booking Engine";
+            document.getElementById('welcome-user-tag').innerText = `Active User: ${account.user} (${account.role})`;
+
+            if (account.role === "Manager") {
+                document.getElementById('manager-only-controls').style.display = 'block';
+                document.getElementById('free-ticket-container').style.display = 'block';
+                state.isManagerPrivilegeBooking = true;
+            } else {
+                document.getElementById('manager-only-controls').style.display = 'none';
+                document.getElementById('free-ticket-container').style.display = 'none';
+                state.isManagerPrivilegeBooking = false;
+            }
+
+            changeView('view-dashboard');
+        }
+
+        function processLogout() {
+            state.currentUser = null;
+            document.getElementById('portal-toggle-btn').innerText = "Staff Portal Login";
+            document.getElementById('free-ticket-container').style.display = 'none';
+            state.isManagerPrivilegeBooking = false;
+            changeView('view-search');
+        }
+
+        /* Business Config Parameter Settings Mutations */
+        function saveConfigValues() {
+            state.config.ecoSaverCancelFee = parseFloat(document.getElementById('cfg-eco-fee').value) || 0;
+            state.config.bizPremiumPct = parseFloat(document.getElementById('cfg-biz-prem').value) || 0;
+            state.config.eFlexPremiumPct = parseFloat(document.getElementById('cfg-eflex-prem').value) || 0;
+            state.config.bFlexPremiumPct = parseFloat(document.getElementById('cfg-bflex-prem').value) || 0;
+            state.config.extraLegroomFee = parseFloat(document.getElementById('cfg-legroom-fee').value) || 0;
+        }
+
+        function addNewStaffAccount() {
+            const u = document.getElementById('new-staff-user').value.trim();
+            const p = document.getElementById('new-staff-pass').value.trim();
+            const r = document.getElementById('new-staff-role').value;
+            if(!u || !p) return alert("Fill parameters accurately.");
+            state.staffAccounts.push({ user:u, pass:p, role:r, status:"Active" });
+            renderStaffTable();
+            document.getElementById('new-staff-user').value = '';
+            document.getElementById('new-staff-pass').value = '';
+        }
+
+        function setStaffStatus(idx, status) {
+            state.staffAccounts[idx].status = status;
+            renderStaffTable();
+        }
+
+        function deleteStaffAccount(idx) {
+            state.staffAccounts.splice(idx, 1);
+            renderStaffTable();
+        }
+
+        function addNewPromoCode() {
+            const n = document.getElementById('new-promo-name').value.trim().toUpperCase();
+            const p = parseFloat(document.getElementById('new-promo-pct').value) || 0;
+            if(!n || p < 0 || p > 100) return alert("Provide valid configuration metrics.");
+            state.promos.push({ name:n, pct:p });
+            renderPromoTable();
+            document.getElementById('new-promo-name').value = '';
+            document.getElementById('new-promo-pct').value = '';
+        }
+
+        function removePromoCode(idx) {
+            state.promos.splice(idx, 1);
+            renderPromoTable();
+        }
+
+        /* Data Renderers UI */
+        function renderStaffTable() {
+            const tbody = document.querySelector('#staff-table tbody');
+            tbody.innerHTML = '';
+            state.staffAccounts.forEach((a, i) => {
+                if(a.user === 'admin') return; // protect default account
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${a.user}</td>
+                    <td>${a.role}</td>
+                    <td>${a.pass}</td>
+                    <td><span class="badge ${a.status === 'Active' ? 'badge-active' : 'badge-suspended'}">${a.status}</span></td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="setStaffStatus(${i}, 'Active')">Activate</button>
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="setStaffStatus(${i}, 'Suspended')">Suspend</button>
+                        <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteStaffAccount(${i})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPromoTable() {
+            const tbody = document.querySelector('#promo-table tbody');
+            tbody.innerHTML = '';
+            state.promos.forEach((p, i) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${p.name}</td><td>${p.pct}%</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="removePromoCode(${i})">Revoke</button></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderMasterBookingTable() {
+            const tbody = document.querySelector('#master-bookings-table tbody');
+            tbody.innerHTML = '';
+            state.bookings.forEach((b) => {
+                let tr = document.createElement('tr');
+                tr.style.cursor = "pointer";
+                tr.onclick = () => {
+                    document.getElementById('retrieve-id').value = b.id;
+                    document.getElementById('retrieve-lastname').value = b.lastName;
+                    retrieveBooking();
+                };
+                tr.innerHTML = `
+                    <td><strong style="color:var(--primary);">${b.id}</strong></td>
+                    <td>${b.from} ➔ ${b.to} ${b.inboundDate ? '🔄' : '➡️'}</td>
+                    <td>${b.lastName}</td>
+                    <td>${b.seats.join(', ')}</td>
+                    <td><span class="badge badge-active" style="background:#e3f2fd; color:#0d47a1;">${b.fareTier}</span></td>
+                    <td>AED ${b.totalCost}</td>
+                    <td><small>${b.isFree ? '⭐ Free Ticket: ' + b.freeReason : 'Standard Paid Collection'}</small></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateDashboardCounters() {
+            document.getElementById('dash-earnings').innerText = `AED ${state.revenue.toFixed(2)}`;
+            document.getElementById('dash-count-eco').innerText = state.countEco;
+            document.getElementById('dash-count-biz').innerText = state.countBiz;
+        }
+
+
+        /* CORE ENGINE TRANSACTION SYSTEM LOGIC FLOWS */
+        
+        function processSearch() {
+            const from = document.getElementById('search-from').value;
+            const to = document.getElementById('search-to').value;
+            const adults = parseInt(document.getElementById('search-adults').value) || 1;
+            const children = parseInt(document.getElementById('search-children').value) || 0;
+            const outboundDate = document.getElementById('search-outbound').value;
+            const inboundDate = document.getElementById('search-inbound').value;
+            const promoStr = document.getElementById('search-promo').value.trim().toUpperCase();
+            
+            if(from === to) return alert("Origin & Destination stations matching conflict.");
+            if(!outboundDate) return alert("Select target departure date framework.");
+
+            let nonHubCode = from === 'DXB' ? to : from;
+            let targetAirportInfo = emiratesAirports.find(a => a.code === nonHubCode);
+            let basePriceCalculated = targetAirportInfo ? targetAirportInfo.basePrice : 1500;
+
+            // Compute Base Flight Matrix Core Variables 
+            let totalPassengers = adults + children;
+            let tripMultiplier = inboundDate ? 2 : 1; 
+            let calculatedBaseFareEco = basePriceCalculated * tripMultiplier;
+
+            let discPct = 0;
+            if(promoStr) {
+                let validPromo = state.promos.find(p => p.name === promoStr);
+                if (validPromo) discPct = validPromo.pct;
+                else alert("Invalid promotional application voucher entered.");
+            }
+
+            // Populate global tx state parameters variables matrix
+            currentTx = {
+                from, to, adults, children, totalPassengers, outboundDate, inboundDate, discPct,
+                baseEcoPrice: calculatedBaseFareEco,
+                isFree: (state.isManagerPrivilegeBooking && document.getElementById('free-ticket-reason').value.trim() !== ""),
+                freeReason: document.getElementById('free-ticket-reason').value.trim(),
+                fareTier: null, seatCharges: 0, finalPrice: 0, selectedSeats: []
+            };
+
+            // Calculate exact fare tier matrix representations
+            let ecoSaverUnit = currentTx.baseEcoPrice;
+            let ecoFlexUnit = ecoSaverUnit * (1 + (state.config.eFlexPremiumPct / 100));
+            let bizSaverUnit = ecoSaverUnit * (1 + (state.config.bizPremiumPct / 100));
+            let bizFlexUnit = bizSaverUnit * (1 + (state.config.bFlexPremiumPct / 100));
+
+            // Apply promotional cuts down directly to total value unit levels if valid
+            if (discPct > 0) {
+                let multiplier = (100 - discPct) / 100;
+                ecoSaverUnit *= multiplier; ecoFlexUnit *= multiplier; bizSaverUnit *= multiplier; bizFlexUnit *= multiplier;
+            }
+
+            // Set final pricing vectors globally inside state instance
+            currentTx.computedPrices = {
+                'E-saver': Math.round(ecoSaverUnit * totalPassengers),
+                'E-flex': Math.round(ecoFlexUnit * totalPassengers),
+                'B-saver': Math.round(bizSaverUnit * totalPassengers),
+                'B-flex': Math.round(bizFlexUnit * totalPassengers)
+            };
+
+            if(currentTx.isFree) {
+                for (let k in currentTx.computedPrices) currentTx.computedPrices[k] = 0;
+            }
+
+            // Display values inside views container boxes logic mappings
+            document.getElementById('fare-flight-summary').innerText = `${from} ➔ ${to} | ${outboundDate} ${inboundDate ? 'until ' + inboundDate : '(One-Way)'} | ${totalPassengers} Passenger(s)`;
+            document.getElementById('price-E-saver').innerText = `AED ${currentTx.computedPrices['E-saver']}`;
+            document.getElementById('price-E-flex').innerText = `AED ${currentTx.computedPrices['E-flex']}`;
+            document.getElementById('price-B-saver').innerText = `AED ${currentTx.computedPrices['B-saver']}`;
+            document.getElementById('price-B-flex').innerText = `AED ${currentTx.computedPrices['B-flex']}`;
+
+            changeView('view-fares');
+        }
+
+        function selectFare(tier) {
+            currentTx.fareTier = tier;
+            document.querySelectorAll('.fare-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`fare-${tier}`).classList.add('selected');
+        }
+
+        function proceedToSeats() {
+            if(!currentTx.fareTier) return alert("Select a preferred airfare operational tier variant.");
+            
+            // Build out Seat Assignment Dynamic Matrix map interface dynamically
+            const container = document.getElementById('dynamic-seat-map');
+            container.innerHTML = '';
+            currentTx.selectedSeats = [];
+            updateSeatCounter();
+
+            let isBusiness = currentTx.fareTier.startsWith('B');
+
+            if(isBusiness) {
+                // Business Class Configuration Map Model Matrix Layout (1-2-1 Config over 5 Rows)
+                for(let r=1; r<=5; r++) {
+                    let rowDiv = document.createElement('div');
+                    rowDiv.className = "seat-row";
+                    rowDiv.appendChild(createLabelNum(r));
+                    
+                    rowDiv.appendChild(createSeatNode(r+'A', true));
+                    rowDiv.appendChild(createAisleSpace());
+                    rowDiv.appendChild(createSeatNode(r+'B', true));
+                    rowDiv.appendChild(createSeatNode(r+'C', true));
+                    rowDiv.appendChild(createAisleSpace());
+                    rowDiv.appendChild(createSeatNode(r+'D', true));
+
+                    container.appendChild(rowDiv);
+                }
+            } else {
+                // Economy Class Configuration Map Model Matrix Layout (3-3 Config over 30 Rows)
+                for(let r=1; r<=30; r++) {
+                    let rowDiv = document.createElement('div');
+                    rowDiv.className = "seat-row";
+                    rowDiv.appendChild(createLabelNum(r));
+
+                    // Extra legroom classifications mapping rows criteria matches
+                    let isLegroom = (r === 1 || r === 11 || r === 12);
+
+                    rowDiv.appendChild(createSeatNode(r+'A', false, isLegroom));
+                    rowDiv.appendChild(createSeatNode(r+'B', false, isLegroom));
+                    rowDiv.appendChild(createSeatNode(r+'C', false, isLegroom));
+                    rowDiv.appendChild(createAisleSpace());
+                    rowDiv.appendChild(createSeatNode(r+'D', false, isLegroom));
+                    rowDiv.appendChild(createSeatNode(r+'E', false, isLegroom));
+                    rowDiv.appendChild(createSeatNode(r+'F', false, isLegroom));
+
+                    container.appendChild(rowDiv);
+                }
+            }
+            changeView('view-seats');
+        }
+
+        function createLabelNum(num) {
+            let d = document.createElement('div'); d.className="row-num"; d.innerText = num; return d;
+        }
+        function createAisleSpace() {
+            let d = document.createElement('div'); d.className="aisle"; return d;
+        }
+
+        function createSeatNode(id, isBiz, isLegroom) {
+            let s = document.createElement('div');
+            s.className = `seat ${isBiz ? 'business' : ''} ${isLegroom ? 'extra-legroom' : ''}`;
+            s.innerText = id;
+
+            // Mock check matching whether seats are pre-occupied or allocated already dynamically
+            let isOccupied = state.bookings.some(b => b.from === currentTx.from && b.outboundDate === currentTx.outboundDate && b.seats.includes(id));
+            if(isOccupied) {
+                s.classList.add('occupied');
+            } else {
+                s.onclick = () => toggleSeatSelection(s, id, isLegroom);
+            }
+            return s;
+        }
+
+        function toggleSeatSelection(element, id, isLegroom) {
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                currentTx.selectedSeats = currentTx.selectedSeats.filter(s => s !== id);
+                if(isLegroom && !currentTx.isFree) currentTx.seatCharges -= state.config.extraLegroomFee;
+            } else {
+                if (currentTx.selectedSeats.length >= currentTx.totalPassengers) {
+                    alert(`All ${currentTx.totalPassengers} ticket seat allocations have already been mapped.`);
+                    return;
+                }
+                element.classList.add('selected');
+                currentTx.selectedSeats.push(id);
+                if(isLegroom && !currentTx.isFree) currentTx.seatCharges += state.config.extraLegroomFee;
+            }
+            updateSeatCounter();
+        }
+
+        function updateSeatCounter() {
+            document.getElementById('seat-selection-counter').innerText = `Seats Allocated Selection Count: ${currentTx.selectedSeats.length} / ${currentTx.totalPassengers}`;
+        }
+
+        function finalizeBooking() {
+            if(currentTx.selectedSeats.length !== currentTx.totalPassengers) {
+                return alert("Complete seat mappings logic requirements for all travelers before tracking confirmation.");
+            }
+
+            // Create Unique Random Generated AlphaNumeric ID Sequence matching constraints matching signature XX1111
+            const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const nums = "0123456789";
+            let randID = alpha[Math.floor(Math.random()*26)] + alpha[Math.floor(Math.random()*26)]
+                       + nums[Math.floor(Math.random()*10)] + nums[Math.floor(Math.random()*10)]
+                       + nums[Math.floor(Math.random()*10)] + nums[Math.floor(Math.random()*10)];
+
+            let totalDue = currentTx.computedPrices[currentTx.fareTier] + currentTx.seatCharges;
+            let lastNameInput = prompt("Enter Primary Adult Last Name (Passenger profile index lookup key):");
+            if (!lastNameInput) lastNameInput = "Passenger";
+
+            let finalRecord = {
+                id: randID,
+                from: currentTx.from,
+                to: currentTx.to,
+                adults: currentTx.adults,
+                children: currentTx.children,
+                outboundDate: currentTx.outboundDate,
+                inboundDate: currentTx.inboundDate,
+                fareTier: currentTx.fareTier,
+                seats: currentTx.selectedSeats,
+                totalCost: totalDue,
+                lastName: lastNameInput.trim(),
+                isFree: currentTx.isFree,
+                freeReason: currentTx.freeReason
+            };
+
+            // Commit System Mutations Data Transactions
+            state.bookings.push(finalRecord);
+            state.revenue += totalDue;
+            if(currentTx.fareTier.startsWith('B')) state.countBiz += currentTx.totalPassengers;
+            else state.countEco += currentTx.totalPassengers;
+
+            // Prompt user tracking counters details layout presentation data matrix
+            document.getElementById('cash-prompt-msg').innerText = `COLLECT AED ${totalDue.toFixed(2)} CASH IMMEDIATELY AT STATION COUNTER`;
+            document.getElementById('conf-id').innerText = randID;
+            document.getElementById('conf-route').innerText = `${finalRecord.from} to ${finalRecord.to}`;
+            document.getElementById('conf-passengers').innerText = `${finalRecord.lastName} (+ ${currentTx.totalPassengers - 1} others)`;
+            document.getElementById('conf-fare').innerText = finalRecord.fareTier;
+            document.getElementById('conf-seats').innerText = finalRecord.seats.join(', ');
+
+            // Refresh dashboards tracking values
+            updateDashboardCounters();
+            renderMasterBookingTable();
+            
+            changeView('view-confirmation');
+        }
+
+        function resetToSearch() {
+            // clear dynamic values references
+            document.getElementById('search-promo').value = '';
+            document.getElementById('free-ticket-reason').value = '';
+            changeView('view-search');
+        }
+
+
+        /* MUTATION RECORDS / CHANGES / CANCELLATIONS FLIGHT OPERATIONS DATA CONTROLLERS */
+        let activeModRecord = null;
+
+        function retrieveBooking() {
+            let lookupId = document.getElementById('retrieve-id').value.trim().toUpperCase();
+            let lookupName = document.getElementById('retrieve-lastname').value.trim();
+
+            let matchedBooking = state.bookings.find(b => b.id === lookupId && b.lastName.toLowerCase() === lookupName.toLowerCase());
+            if(!matchedBooking) return alert("No matching active booking discovered inside database logs.");
+
+            activeModRecord = matchedBooking;
+
+            document.getElementById('mod-summary-id').innerText = matchedBooking.id;
+            document.getElementById('mod-summary-route').innerText = `${matchedBooking.from} ➔ ${matchedBooking.to} (Fare: ${matchedBooking.fareTier}) [Seats: ${matchedBooking.seats.join(', ')}]`;
+            document.getElementById('mod-summary-paid').innerText = matchedBooking.totalCost;
+            
+            document.getElementById('mod-from').value = matchedBooking.from;
+            document.getElementById('mod-to').value = matchedBooking.to;
+            document.getElementById('mod-date-out').value = matchedBooking.outboundDate;
+            document.getElementById('mod-date-in').value = matchedBooking.inboundDate || "";
+
+            changeView('view-modify-ticket');
+        }
+
+        function executeCancellation() {
+            if(!activeModRecord) return;
+            if(!confirm("Confirm irreversible physical cancellation sequence for this system reservation?")) return;
+
+            let penalFee = 0;
+            if(activeModRecord.fareTier === 'E-saver' && !activeModRecord.isFree) {
+                penalFee = state.config.ecoSaverCancelFee;
+            }
+
+            let calculatedRefundPayout = activeModRecord.totalCost - penalFee;
+            if(calculatedRefundPayout < 0) calculatedRefundPayout = 0;
+
+            // Adjust Ledger Analytics Accounting Records 
+            state.revenue -= calculatedRefundPayout;
+            let countTotal = activeModRecord.adults + activeModRecord.children;
+            if(activeModRecord.fareTier.startsWith('B')) state.countBiz -= countTotal;
+            else state.countEco -= countTotal;
+
+            // Splice data mutations vector reference
+            state.bookings = state.bookings.filter(b => b.id !== activeModRecord.id);
+
+            alert(`Reservation cancelled successfully.\n\n💵 Cash Penalty Retained: AED ${penalFee}\n💰 Cash Refund Paid Out to Customer: AED ${calculatedRefundPayout}`);
+            
+            updateDashboardCounters();
+            renderMasterBookingTable();
+            resetToSearch();
+        }
+
+        function calculateModificationFee() {
+            if(!activeModRecord) return;
+            
+            const nFrom = document.getElementById('mod-from').value;
+            const nTo = document.getElementById('mod-to').value;
+            const nOut = document.getElementById('mod-date-out').value;
+            const nIn = document.getElementById('mod-date-in').value;
+
+            if(nFrom === nTo) return alert("Origin & Destination mismatch conflicts.");
+            if(!nOut) return alert("Invalid date specified parameters.");
+
+            let changeFee = 0;
+            if(activeModRecord.fareTier === 'E-saver' && !activeModRecord.isFree) {
+                changeFee = state.config.ecoSaverCancelFee;
+            }
+
+            // Route Price delta check configurations tracking computation logic block
+            let nonHubCode = nFrom === 'DXB' ? nTo : nFrom;
+            let targetAirportInfo = emiratesAirports.find(a => a.code === nonHubCode);
+            let basePriceCalculated = targetAirportInfo ? targetAirportInfo.basePrice : 1500;
+            let tripMultiplier = nIn ? 2 : 1;
+            let calculatedBaseFareEco = basePriceCalculated * tripMultiplier;
+
+            // Recalculate based on matching level tier structures logic
+            let tierMultiplier = 1;
+            if(activeModRecord.fareTier === 'E-flex') tierMultiplier = (1 + (state.config.eFlexPremiumPct / 100));
+            if(activeModRecord.fareTier === 'B-saver') tierMultiplier = (1 + (state.config.bizPremiumPct / 100));
+            if(activeModRecord.fareTier === 'B-flex') tierMultiplier = (1 + (state.config.bizPremiumPct / 100)) * (1 + (state.config.bFlexPremiumPct / 100));
+
+            let unitCostCalculated = calculatedBaseFareEco * tierMultiplier;
+            let totalPassCount = activeModRecord.adults + activeModRecord.children;
+            let estimatedNewFareCost = Math.round(unitCostCalculated * totalPassCount);
+            
+            if(activeModRecord.isFree) estimatedNewFareCost = 0;
+
+            let priceDifferenceGap = estimatedNewFareCost - (activeModRecord.totalCost - activeModRecord.seats.length * (activeModRecord.seats.includes('1A') || activeModRecord.seats.includes('1B') ? state.config.extraLegroomFee : 0)); // simple gap calculation model tracking
+            if (priceDifferenceGap < 0) priceDifferenceGap = 0; // standard non-residual protection line configuration index rules
+
+            let finalCashToCollect = changeFee + priceDifferenceGap;
+
+            alert(`Modification Cost Recalculation Breakdown:\n\n• Processing Modification Penalty: AED ${changeFee}\n• Route/Date Pricing Difference Gap: AED ${priceDifferenceGap}\n\n💵 TOTAL EXTRA CASH TO COLLECT AT COUNTER: AED ${finalCashToCollect}`);
+
+            // Perform direct data records state updates mutations
+            activeModRecord.from = nFrom;
+            activeModRecord.to = nTo;
+            activeModRecord.outboundDate = nOut;
+            activeModRecord.inboundDate = nIn;
+            activeModRecord.totalCost += priceDifferenceGap; 
+
+            state.revenue += finalCashToCollect;
+
+            updateDashboardCounters();
+            renderMasterBookingTable();
+            alert("Ticket updated and seat configurations locked safely under new scheduling indices parameters.");
+            resetToSearch();
+        }
+    </script>
+</body>
+</html>
